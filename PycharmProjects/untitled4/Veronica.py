@@ -77,7 +77,7 @@ def execute_cmd(cmd):
 
 
     elif cmd == 'wet':
-        owm = pyowm.OWM('fb5f8127f82131b3a24784cb37da0d57', language='ru-RU')
+        owm = pyowm.OWM('fb5f8127f82131b3a24784cb37d', language='ru-RU')
         city =('Мстиславль')
         obser = owm.weather_at_place(city)
         w = obser.get_weather()
