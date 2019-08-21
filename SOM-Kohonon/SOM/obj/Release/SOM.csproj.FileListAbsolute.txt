@@ -1,0 +1,10 @@
+C:\Users\AmXR\source\repos\SOM\SOM\bin\Release\SOM.exe.config
+C:\Users\AmXR\source\repos\SOM\SOM\bin\Release\SOM.exe
+C:\Users\AmXR\source\repos\SOM\SOM\bin\Release\SOM.pdb
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.csprojAssemblyReference.cache
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.Form1.resources
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.Properties.Resources.resources
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.csproj.GenerateResource.cache
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.csproj.CoreCompileInputs.cache
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.exe
+C:\Users\AmXR\source\repos\SOM\SOM\obj\Release\SOM.pdb
