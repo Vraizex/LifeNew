@@ -1,0 +1,50 @@
+#include<opencv2/opencv.hpp>
+#include<iostream>
+#include <Windows.h>
+#include "opencv2\highgui.hpp"
+#include "opencv2\imgproc.hpp"
+#include "opencv2/video/background_segm.hpp"
+#include "opencv2/video/tracking.hpp"
+
+using namespace std;
+using namespace cv;
+int main()
+{
+	Mat img;
+		img = imread("C:\\Users\\AmXR\\Desktop\\1.jpg",IMREAD_COLOR);
+	namedWindow("image", WINDOW_NORMAL);
+	imshow("image", img);
+	waitKey(1000);
+	imwrite("Step.jpg", img);
+
+
+	Rect Rec(100, 100, 0, 0);
+
+	rectangle(img, Rec, Scalar(255), 1, 8, 0);
+
+	namedWindow("Hel", WINDOW_AUTOSIZE);
+	imshow("step",img);
+	waitKey(1000);
+
+
+	// This copy Roi Image into loaded on position Where rec
+	imwrite("Step2",img);
+	Mat Roi = img(Rec);
+	namedWindow("Step 3", WINDOW_AUTOSIZE);
+	imshow("Draw", Roi);
+	waitKey(1000);
+	//imwrite("spet3", Roi);
+
+	//Rect WhereRec(0, 0, Roi.cols, Roi.row);
+	//Roi.copyTo(img(WhereRec));
+
+
+	//namedWindow("Step 4  Final result", WINDOW_AUTOSIZE);
+	//imshow("Step 4 Final result", img);
+	//waitKey(1000);
+	//imwrite("Step4.JPG", img);
+
+
+	waitKey(0);
+	return 0;
+}
