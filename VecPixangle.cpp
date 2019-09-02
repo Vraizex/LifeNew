@@ -1,4 +1,4 @@
-
+﻿
 #define _USE_MATH_DEFINES
 
 #include <opencv2/opencv.hpp>
@@ -31,15 +31,15 @@ void waitImage(string const& title, Mat const& img)
 }
 
 
-double angle(const Point& curr_point(x1,y1), const Point& curr_point(x2,y2))
-{
-	double arctan = atan2(x2-x1,y2-y1);
-	if (arctan > 1.0)
-		return 0.0;
-	else if (arctan < -1.0)
-		return M_PI;
-	return atan2(arctan);
-}
+//double angle(const Point& curr_point(x1,y1), const Point& curr_point(x2,y2))
+//{
+//	double arctan = atan2(x2-x1,y2-y1);
+//	if (arctan > 1.0)
+//		return 0.0;
+//	else if (arctan < -1.0)
+//		return M_PI;
+//	return atan2(arctan);
+//}
 
 int main(/*void*/)
 {
@@ -103,6 +103,7 @@ int main(/*void*/)
 	//Canny(sub_mat, sub_mat, 100, 200);
 	/*Laplacian(sub_mat,sub_mat, CV_8UC1,0);*/
 	waitImage("New_pic", sub_mat);
+
 
 	return 0;
 
