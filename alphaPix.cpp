@@ -6,13 +6,12 @@
 #include <opencv2/core/core.hpp> 
 #include <opencv2/highgui.hpp>
 
-#include <Windows.h>
 
-#include<iostream>
-#include<stdlib.h>
-#include<stdio.h>
-#include<math.h>
-#include<cmath>
+#include <iostream>
+//#include <stdlib.h>
+//#include <stdio.h>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace cv;
@@ -112,6 +111,8 @@ int main(/*void*/)
 	}
 	waitImage("Used matrix 3X3", sub_mat);
 	
+	double max_angle = numeric_limits<double>::min();
+	double min_angle = numeric_limits<double>::max();
 
 	for (int i = 1; i < sub_mat.rows - 1; i++) // search pixel
 	{
@@ -123,7 +124,10 @@ int main(/*void*/)
 						
 						double angle = atan2(sub_mat.at<uint8_t>(i - N) - sub_mat.at<uint8_t>(i), sub_mat.at<uint8_t>(j - N) - sub_mat.at<uint8_t>(j));
 						double angles = angle * 180 / M_PI;
-						
+
+						max_angle = max(angle, max_angle);
+						min_angle = min(angle, min_angle);
+
 						if (angles > 1)
 						{
 							sub_mat.at<uint8_t>(curr_point) = 1;
@@ -133,12 +137,15 @@ int main(/*void*/)
 						{
 							sub_mat.at<uint8_t>(curr_point) = 0;
 						}
-						sub_mat.at<uint8_t>(curr_point) = angles;
+						uint8_t val = static_cast<uint8_t>((angle + 3.2) * 35);
+						//std::cout << static_cast<uint32_t>(val) << endl;
+						sub_mat.at<uint8_t>(curr_point) = val;// angles;
 			
 			}
 		}
-
 	}
+
+	std::cout << "max angle: " << min_angle << " : " << max_angle << endl;
 
 	waitImage("Angle", sub_mat);
 
@@ -153,5 +160,7 @@ int main(/*void*/)
 
 	return 0;
 
+
+}
 
 }
