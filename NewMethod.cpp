@@ -131,8 +131,8 @@ std::pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img)
 				double angles = angle * 180 / M_PI;
 				uint8_t val = static_cast<uint8_t>((angle + 3.2) * 35);
 				mat_angle.at<uint8_t>(curr_point) = val;
-				
-				
+			
+
 
 
 			}
