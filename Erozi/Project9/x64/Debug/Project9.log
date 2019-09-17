@@ -1,0 +1,13 @@
+﻿  main.cpp
+c:\users\user\source\repos\project9\project9\main.cpp(207): warning C4244: =: преобразование "double" в "_Tp", возможна потеря данных
+          with
+          [
+              _Tp=uint8_t
+          ]
+c:\users\user\source\repos\project9\project9\main.cpp(259): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\source\repos\project9\project9\main.cpp(260): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\source\repos\project9\project9\main.cpp(284): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\users\user\source\repos\project9\project9\main.cpp(292): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\source\repos\project9\project9\main.cpp(293): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+c:\users\user\source\repos\project9\project9\main.cpp(296): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
+  Project9.vcxproj -> C:\Users\User\source\repos\Project9\x64\Debug\Project9.exe
