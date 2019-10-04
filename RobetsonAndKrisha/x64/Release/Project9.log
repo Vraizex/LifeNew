@@ -1,0 +1,8 @@
+﻿  main.cpp
+c:\users\user\source\repos\project9\project9\main.cpp(6): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+  Создание кода
+  1 of 345 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Создание кода завершено
+  Project9.vcxproj -> C:\Users\User\source\repos\Project9\x64\Release\Project9.exe
