@@ -61,6 +61,20 @@ float Garrot_shrink(float d, float T) // Ослабление коэффициентов по Гаррота
 	return res;
 }
 
+void transpose(int matrix[3][3])
+{
+	int t;
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = i; j < 3; ++j)
+		{
+			t = matrix[i][j];
+			matrix[i][j] = matrix[j][i];
+			matrix[j][i] = t;
+		}
+	}
+}
+
 cv::Mat calcHGradient(cv::Mat& img)
 {
 	cv::Mat sub_mat(img.size(), CV_8UC1, Scalar(0));
@@ -137,7 +151,7 @@ std::pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img)
 	return { mat_mod, mat_angle };
 }
 
-Mat cvHaarWavelet(Mat &img, Mat &dst, int NIter) // Вейвлет-преобразование
+cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter) // Вейвлет-преобразование
 {
 	
 	float c,b, dh, dv, dd;
@@ -172,7 +186,8 @@ Mat cvHaarWavelet(Mat &img, Mat &dst, int NIter) // Вейвлет-преобразование
 		return dst;
 	}
 }
-Mat cvInvHaarWavelet(Mat &img, Mat &dst, int NIter, int SHRINKAGE_TYPE, float SHRINKAGE_T )
+
+cv::Mat cvInvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter, int SHRINKAGE_TYPE, float SHRINKAGE_T )
 {
 	float c, dh, dv, dd;
 
@@ -472,20 +487,6 @@ cv::Mat calcLoGDiskretWeightsProg(cv::Mat& img)
 	}
 	return sub_mat;
 }
-
-void transpose(int matrix[3][3]) 
-{
-    int t;
-    for(int i = 0; i < 3; ++i)
-    {
-        for(int j = i; j < 3; ++j)
-        {
-            t = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = t;
-        }
-    }
-} 
 
 //Mat GradientSOBOLBinAndMatrix(Mat& img)
 //{
@@ -851,7 +852,7 @@ cv::Mat calc3x3GradientSOBOLBinAndMatrix(cv::Mat& img)
 //
 //	return { mat_mod };
 //}
-Mat dilateY(Mat& img) {
+cv::Mat dilateY(cv::Mat& img) {
 
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -918,7 +919,7 @@ Mat dilateY(Mat& img) {
 	return mat_start;
 }
 
-Mat dilateX(Mat& img) {
+cv::Mat dilateX(cv::Mat& img) {
 
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -984,7 +985,7 @@ Mat dilateX(Mat& img) {
 
 }
 
-Mat dilateXY(Mat& img) {
+cv::Mat dilateXY(cv::Mat& img) {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
 	int rows = img.rows;
@@ -1057,7 +1058,7 @@ Mat dilateXY(Mat& img) {
 	return mat_start;
 }
 
-Mat dilate3X3Y(Mat& img) {
+cv::Mat dilate3X3Y(cv::Mat& img) {
 
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -1137,7 +1138,7 @@ Mat dilate3X3Y(Mat& img) {
 
 }
 
-Mat dilateGOA(Mat& img, int k)
+cv::Mat dilateGOA(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -1202,7 +1203,7 @@ Mat dilateGOA(Mat& img, int k)
 	return mat_start;
 }
 
-Mat dilateAndErozia(Mat& img, int k, int z)
+cv::Mat dilateAndErozia(cv::Mat& img, int k, int z)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -1305,7 +1306,7 @@ Mat dilateAndErozia(Mat& img, int k, int z)
 	
 }
 
-Mat dilateEroziaLevel(Mat& img, int k)
+cv::Mat dilateEroziaLevel(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -1374,7 +1375,7 @@ Mat dilateEroziaLevel(Mat& img, int k)
 	return mat_start;
 }
 
-Mat EroziaAndDilate(Mat& img, int k, int z)
+cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -1477,7 +1478,7 @@ Mat EroziaAndDilate(Mat& img, int k, int z)
 
 }
 
-Mat Bin(Mat& img)
+cv::Mat Bin(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -1522,7 +1523,7 @@ Mat Bin(Mat& img)
 	return mat_start;
 }
 
-Mat dilateMXN(Mat& img, int k, int z)
+cv::Mat dilateMXN(cv::Mat& img, int k, int z)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -1821,7 +1822,7 @@ cv::Mat NewLoG(cv::Mat& img)
 	return sub_mat;
 }
 
-Mat BinandDeleteOnlyPixels(Mat& img) 
+cv::Mat BinandDeleteOnlyPixels(cv::Mat& img)
 {
 
 
@@ -1893,7 +1894,7 @@ Mat BinandDeleteOnlyPixels(Mat& img)
 	return mat_start;
 }
 
-Mat lagrange2(Mat& img)
+cv::Mat lagrange2(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -1944,7 +1945,7 @@ Mat lagrange2(Mat& img)
 	return mat_start;
 }
 
-Mat Catmull_Rom(Mat& img)
+cv::Mat Catmull_Rom(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -1992,7 +1993,7 @@ Mat Catmull_Rom(Mat& img)
 	return mat_start;
 }
 
-Mat B_Spline(Mat& img)
+cv::Mat B_Spline(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
@@ -2051,7 +2052,7 @@ Mat B_Spline(Mat& img)
 	return mat_start;
 }
 
-Mat dilateBiz(Mat& img, int k)
+cv::Mat dilateBiz(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2128,7 +2129,7 @@ Mat dilateBiz(Mat& img, int k)
 	return mat_start;
 }
 
-Mat Splines(Mat& img)
+cv::Mat Splines(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2175,7 +2176,7 @@ Mat Splines(Mat& img)
 	return mat_start;
 }
 
-Mat LOGLith(Mat& img)
+cv::Mat LOGLith(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	cv::Mat mat_f(img.size(), CV_8UC1, Scalar(0));
@@ -2218,9 +2219,7 @@ Mat LOGLith(Mat& img)
 	return mat_start;
 }
 
-
-
-Mat dilateAndEroziaProbMatrix(Mat& img, int k, int z) //operator Kircsha
+cv::Mat dilateAndEroziaProbMatrix(cv::Mat& img, int k, int z) //operator Kircsha
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2326,8 +2325,7 @@ Mat dilateAndEroziaProbMatrix(Mat& img, int k, int z) //operator Kircsha
 	return mat_start;
 }
 
-
-Mat dilateAndEroziaRobinsone(Mat& img, int k) //operator Robinsone
+cv::Mat dilateAndEroziaRobinsone(cv::Mat& img, int k) //operator Robinsone
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2433,9 +2431,7 @@ Mat dilateAndEroziaRobinsone(Mat& img, int k) //operator Robinsone
 	return mat_start;
 }
 
-
-
-Mat MarrHildeth(Mat& img, float sigm)
+cv::Mat MarrHildeth(cv::Mat& img, float sigm)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2464,8 +2460,7 @@ Mat MarrHildeth(Mat& img, float sigm)
 	return mat_start;
 }
 
-
-Mat MarrHildethNew(Mat& img, float sigm)
+cv::Mat MarrHildethNew(cv::Mat& img, float sigm)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2495,7 +2490,7 @@ Mat MarrHildethNew(Mat& img, float sigm)
 	return mat_start;
 }
 
-Mat NewFilter(Mat& img)
+cv::Mat NewFilter(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	int cols = img.cols;
@@ -2523,13 +2518,72 @@ Mat NewFilter(Mat& img)
 			float ddy = (img.at<uint8_t>(Point(x, y + 1)) - 2 * (img.at<uint8_t>(Point(x, y))) +
 				img.at<uint8_t>(Point(x, y - 1)));
 
-
-			float lpCas =sqrt(pow( ddx * Gx[3][3],2) + pow(ddy * Gy[3][3],2));
-
+			float lpCas = sqrt(pow(ddx * Gx[3][3], 2) + pow(ddy * Gy[3][3], 2));
 			mat_start.at<uint8_t>(curr_point) = static_cast<uint8_t>(lpCas);
-
 
 		}
 	}
 	return mat_start;
 }
+
+//std::pair<cv::Mat, cv::Mat> calc5x5Gradient(cv::Mat& img)
+//{
+//	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
+//	cv::Mat mat_angle(img.size(), CV_8UC1, Scalar(0));
+//
+//	int cols = img.cols;
+//	int rows = img.rows;
+//
+//	float max_angle = numeric_limits<double>::min();
+//	float min_angle = numeric_limits<double>::max();
+//
+//	for (int x = 1; x < cols - 1; x++)
+//	{
+//		for (int y = 1; y < rows - 1; y++)
+//		{
+//			vector<uint8_t> arr;
+//			for (int i = -1; i <= 1; i++)
+//			{
+//				for (int j = -1; j <= 1; j++)
+//				{
+//					auto cur = img.at<uint8_t>(Point(j + x, i + y));
+//					arr.push_back(cur);
+//				}
+//			}
+//
+//			uint8_t const& cnt = arr[12];
+//			float sum = 0.;
+//
+//			for (auto const it : arr)
+//			{
+//				sum += pow(it - cnt, 2);
+//			}
+//			float mod = sqrt(sum);
+//
+//			Point curr_point(x, y);
+//
+//			mat_mod.at<uint8_t>(curr_point) = 255 - static_cast<uint8_t>(mod);
+//
+//			float dx = sqrt(pow(arr[0] - cnt, 2) + pow(arr[3] - cnt, 2) + pow(arr[6] - cnt, 2) + pow(arr[3] - cnt, 2) + pow(arr[5] - cnt, 2) + pow(arr[8] - cnt, 2));
+//			float dy = sqrt(pow(arr[0] - cnt, 2) + pow(arr[1] - cnt, 2) + pow(arr[2] - cnt, 2) + pow(arr[6] - cnt, 2) + pow(arr[7] - cnt, 2) + pow(arr[8] - cnt, 2));
+//
+//			//float dx = sqrt(pow(arr[0] - cnt, 2) + pow(arr[3] - cnt, 2) + pow(arr[6] - cnt, 2) + pow(arr[3] - cnt, 2) + pow(arr[5] - cnt, 2) + pow(arr[8] - cnt, 2));
+//			//float dy = sqrt(pow(arr[0] - cnt, 2) + pow(arr[1] - cnt, 2) + pow(arr[2] - cnt, 2) + pow(arr[6] - cnt, 2) + pow(arr[7] - cnt, 2) + pow(arr[8] - cnt, 2));
+//
+//
+//			float angle_rad = atan2(dy, dx);
+//
+//			float angle_grad = ((angle_rad * 180. / M_PI) + 3.2);
+//
+//			max_angle = max(angle_grad, max_angle);
+//			min_angle = min(angle_grad, min_angle);
+//
+//			mat_angle.at<uint8_t>(curr_point) = static_cast<uint8_t>(angle_grad);
+//
+//		}
+//	}
+//
+//	cout << "angle: " << min_angle << ", " << max_angle << endl;
+//
+//	return { mat_mod, mat_angle };
+//}

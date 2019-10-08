@@ -48,15 +48,14 @@ protected:
 
 
 cv::Mat calc3x3GradientSOBOL(cv::Mat& img);
-Mat dilateXY(Mat& img);
-Mat dilate3X3Y(Mat& img);
-Mat dilateGOA(Mat& img, int k);
-Mat dilateAndErozia(Mat& img, int k, int z);
-Mat EroziaAndDilate(Mat& img, int k, int z);
-Mat Bin(Mat& img);
-Mat dilateMXN(Mat& img, int k, int z);
-Mat dilateEroziaLevel(Mat& img, int k);
-Mat dilateGOAEroze(Mat& img, int k);
+cv::Mat dilateXY(cv::Mat& img);
+cv::Mat dilate3X3Y(cv::Mat& img);
+cv::Mat dilateGOA(cv::Mat& img, int k);
+cv::Mat dilateAndErozia(cv::Mat& img, int k, int z);
+cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z);
+cv::Mat Bin(cv::Mat& img);
+cv::Mat dilateMXN(cv::Mat& img, int k, int z);
+cv::Mat dilateEroziaLevel(cv::Mat& img, int k);
 cv::Mat calcLoG(cv::Mat& img);
 cv::Mat calcLoGDiskret(cv::Mat& img);
 cv::Mat calcLoGDiskretWeights(cv::Mat& img);
@@ -64,10 +63,10 @@ cv::Mat calcLoGDiskretWeightsProg(cv::Mat& img);
 cv::Mat calc3x3GradientSOBOLBinAndMatrix(cv::Mat& img);
 cv::Mat calc3x3GradientPrevitta(cv::Mat& img);
 cv::Mat calcRobertsa(cv::Mat& img);
-cv::Mat calcHGradient(Mat& img);
-Mat dilateY(Mat& img);
-Mat dilateX(Mat& img);
-cv::Mat cvHaarWavelet(Mat &img, Mat &dst, int NIter);
+cv::Mat calcHGradient(cv::Mat& img);
+cv::Mat dilateY(cv::Mat& img);
+cv::Mat dilateX(cv::Mat& img);
+cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter);
 pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img);
 cv::Mat cvInvHaarWavelet(Mat &src, Mat &dst, int NIter, int SHRINKAGE_TYPE = 0, float SHRINKAGE_T = 50); // Вейвлет-преобразование
 
@@ -76,17 +75,17 @@ cv::Mat NewSobol(cv::Mat& img);
 cv::Mat NewShar(cv::Mat& img);
 cv::Mat NewGradientPrevitta(cv::Mat& img);
 cv::Mat NewLoG(cv::Mat& img);
-Mat BinandDeleteOnlyPixels(Mat& img);
-Mat lagrange2(Mat& img);
-Mat Catmull_Rom(Mat& img);
-Mat B_Spline(Mat& img);
-Mat dilateBiz(Mat& img, int k);
-Mat Splines(Mat& img);
-Mat LOGLith(Mat& img);
+cv::Mat BinandDeleteOnlyPixels(cv::Mat& img);
+cv::Mat lagrange2(cv::Mat& img);
+cv::Mat Catmull_Rom(cv::Mat& img);
+cv::Mat B_Spline(cv::Mat& img);
+cv::Mat dilateBiz(cv::Mat& img, int k);
+cv::Mat Splines(cv::Mat& img);
+cv::Mat LOGLith(cv::Mat& img);
 
-Mat dilateAndEroziaProbMatrix(Mat& img, int k, int z);
-Mat dilateAndEroziaRobinsone(Mat& img, int k);
-Mat MarrHildeth(Mat& img, float sigm);
+cv::Mat dilateAndEroziaProbMatrix(cv::Mat& img, int k, int z);
+cv::Mat dilateAndEroziaRobinsone(cv::Mat& img, int k);
+cv::Mat MarrHildeth(cv::Mat& img, float sigm);
 
-Mat MarrHildethNew(Mat& img, float sigm);
-Mat NewFilter(Mat& img);
+cv::Mat MarrHildethNew(cv::Mat& img, float sigm);
+cv::Mat NewFilter(cv::Mat& img);

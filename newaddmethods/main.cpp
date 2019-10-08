@@ -9,11 +9,11 @@ void main()
 
 		/*string file_path = "C:\\Users\\User\\Downloads\\Lenna.png";*/
 		/*std::string file_path = "C:\\Users\\User\\Downloads\\Telegram Desktop\\DataSet_V\\DataSet_V\\img0_.png";*/
-		std::string file_path = "C:\\Users\\User\\Downloads\\im0_.png";
+		std::string file_path = "C:\\Users\\User\\Downloads\\img\\123.png";
 		std::string file_path1 = "C:\\Users\\User\\Downloads\\im0_.png";
 		
-		Mat img = imread(file_path, 0);
-		Mat dst = imread(file_path, 0);
+		cv::Mat img = imread(file_path, 0);
+		cv::Mat dst = imread(file_path, 0);
 		
 		if (!img.data) // no image loading;
 		{
@@ -37,23 +37,25 @@ void main()
 		//Window win_lagrange2("lagrange2");
 		//win_lagrange2.show(mat_lagrange2);
 
-		Mat mat_experians = dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
+		cv::Mat mat_experians = dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
 		Window win_experians("Mat");
 		win_experians.show(mat_experians);
 
-		Mat mat_MarrHildet = MarrHildeth(img, 0.9)+ dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
+		cv::Mat mat_MarrHildet = MarrHildeth(img, 0.9)+ dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
 		Window win_MarrHildeth("Mat MarrHildeth(Mat& img, float sigm)");
 		win_MarrHildeth.show(mat_MarrHildet);
 
-		Mat mat_MarrHildethNew = MarrHildethNew(img, 0.9) + dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
+		cv::Mat mat_MarrHildethNew = MarrHildethNew(img, 0.9) + dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3);
 		Window win_MarrHildethNew("Mat MarrHildethNew");
 		win_MarrHildethNew.show(mat_MarrHildethNew);
-
-
 	
-		Mat mat_newFilterforapplication = NewFilter(img) *30;
+		cv::Mat mat_newFilterforapplication = NewFilter(img) * 50;
 		Window win_newFilterForapplication("This is new Filter LOG Methods for image and Computer vision");
 		win_newFilterForapplication.show(mat_newFilterforapplication);
+
+		cv::Mat mat_example = calcHGradient(img) * 0.5 + MarrHildeth(img, 0.9)+ dilateAndEroziaProbMatrix(img, 3, 0) + dilateAndEroziaRobinsone(img, 3) ;
+		Window win_exap("Example probably");
+		win_exap.show(mat_example);
 
 		//Mat mat_experiansRobinsone = dilateAndEroziaRobinsone(img, 3);
 		//Window win_experiansRobinsone("Mat_Robinsone");
