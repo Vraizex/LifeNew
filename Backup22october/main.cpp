@@ -74,16 +74,16 @@ int main()
 		cv::Mat labels;
 		cv::Mat img = imread(file_path, 1);
 		cv::Mat dst = imread(file_path, 1);
-		cv::Mat_<Vec3b> src = imread(file_path, 0);
+		cv::Mat_<Vec3b> src = imread(file_path, 1);
 		
 		if (!img.data) // no image loading;
 		{
 			throw std::system_error(errno, std::system_category(), file_path);
 		}
 
-		Mat_<Vec3b> mat_new = k_means(src);
-		Window win_kms("mat_new");
-		win_kms.show(mat_new);
+		k_means(src);
+
+		
 		
 
 		//int pixel_index = 0;

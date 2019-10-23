@@ -20,13 +20,13 @@ float dist(Point a, Point b, Vec3b color1, Vec3b color2)
 
 Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 {
-		cv::Mat_<Vec3b> src, clone;
+		cv::Mat_<Vec3b> clone;
 		std::string file_path = "C:\\Users\\User\\Downloads\\im0_.png";
-		src = imread(file_path, 0);
+		src = imread(file_path, 1);
 		clone = src.clone();
 
 		int no_of_points = src.rows * src.cols;
-		int no_clusters = 12;
+		int no_clusters = 4;
 		
 		// Get all the points in the image
 		std::vector<pair <Point, Vec3b>> points;
