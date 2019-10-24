@@ -4,6 +4,7 @@
 #include <time.h>
 
 
+
 cv::RNG rng(12345);
 
 cv::Mat sobel =  (Mat_<float>(3, 3) << -1 / 16., -2 / 16., -1 / 16., 0, 0, 0, 1 / 16., 2 / 16., 1 / 16.);
@@ -82,9 +83,11 @@ int main()
 		}
 
 		k_means(src);
-
-		
-		
+		//kMeans(src);
+	
+		//Mat mat_final = myfilter2d(img, img);
+		//Window win_final("SuperPix:");
+		//win_final.show(mat_final);
 
 		//int pixel_index = 0;
 		//for (int y = 0; y < img.rows; y++) 

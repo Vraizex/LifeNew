@@ -102,12 +102,7 @@ cv::Mat MatrixGrad(cv::Mat& img, int h);
 
 Mat kMeans(Mat& img);
 Mat_<Vec3b> k_means(Mat_<Vec3b> & src);
-
-
-
-
-
-
+Mat myfilter2d(Mat& img, Mat &filter);
 
 
 
@@ -149,3 +144,9 @@ public:
 	friend std::ostream & operator<<(std::ostream & os, const K_means & k); //перегружений оператор << 
 };
 
+
+
+//cv::Mat superPix(cv::Mat& img);
+//Mat myfilter2d(Mat input, Mat filter);
+
+Mat convolute2D(Mat& img, double** kernel, int W);

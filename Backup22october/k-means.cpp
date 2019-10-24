@@ -26,7 +26,7 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		clone = src.clone();
 
 		int no_of_points = src.rows * src.cols;
-		int no_clusters = 4;
+		int no_clusters = 7;
 		
 		// Get all the points in the image
 		std::vector<pair <Point, Vec3b>> points;
@@ -151,3 +151,46 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		waitKey(0);
 	
 }
+
+//cv::Mat_<Vec3b> kMeans(Mat_<Vec3b>& src)
+//{
+//	
+//
+//
+//		vector<int> colors;
+//
+//		for (int i = 0; i < src.rows; i++)
+//		{
+//			for (int j = 0; j < src.cols; j++)
+//			{
+//				colors.push_back(src(i, j)[0]);
+//				colors.push_back(src(i, j)[1]);
+//				colors.push_back(src(i, j)[2]);
+//			}
+//		}
+//
+//		cout << colors.size();
+//
+//		vector<Point2i> points;
+//
+//		for (int i = 0; i < src.rows; i++)
+//		{
+//			for (int j = 0; j < src.cols; j++)
+//			{
+//				points.push_back(Point2d(i, j));
+//			}
+//		}
+//
+//		int n = points.size();
+//
+//		default_random_engine gen;
+//		uniform_int_distribution<int> dist_img(0, n);
+//
+//		int k = 3;
+//
+//		vector<int> randomses;
+//
+//		imshow("image", src);
+//		waitKey();
+//	
+//}
