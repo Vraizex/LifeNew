@@ -2631,193 +2631,62 @@ cv::Mat newfil(Mat &img)
 
 
 
-void form_an_image(std::ostream & st) {
-	srand((unsigned)time(NULL));
-	for (int i = 1; i <= N * 3; i++) {
-		st << 0 + rand() % 256 << " ";
-		if (i % 3 == 0) st << std::endl;
-	}
-}
+//void form_an_image(std::ostream & st) {
+//	srand((unsigned)time(NULL));
+//	for (int i = 1; i <= N * 3; i++) {
+//		st << 0 + rand() % 256 << " ";
+//		if (i % 3 == 0) st << std::endl;
+//	}
+//}
 
-void K_means::identify_centers()
-{
-	srand((unsigned)time(NULL));
-	rgb temp;
-	rgb *mas = new rgb[q_klaster];
-	for (int i = 0; i < q_klaster; i++) {
-		temp = pixcel[0 + rand() % k_pixcel];
-		for (int j = i; j < q_klaster; j++) {
-			if (temp.r != mas[j].r && temp.g != mas[j].g && temp.b != mas[j].b) {
-				mas[j] = temp;
-			}
-			else {
-				i--;
-				break;
-			}
-		}
-	}
-	for (int i = 0; i < q_klaster; i++) {
-		centr.push_back(mas[i]);
-	}
-	delete[]mas;
-}
+//void K_means::identify_centers()
+//{
+//	srand((unsigned)time(NULL));
+//	rgb temp;
+//	rgb *mas = new rgb[q_klaster];
+//	for (int i = 0; i < q_klaster; i++) {
+//		temp = pixcel[0 + rand() % k_pixcel];
+//		for (int j = i; j < q_klaster; j++) {
+//			if (temp.r != mas[j].r && temp.g != mas[j].g && temp.b != mas[j].b) {
+//				mas[j] = temp;
+//			}
+//			else {
+//				i--;
+//				break;
+//			}
+//		}
+//	}
+//	for (int i = 0; i < q_klaster; i++) {
+//		centr.push_back(mas[i]);
+//	}
+//	delete[]mas;
+//}
+//
+//K_means::K_means(int n, rgb * mas, int n_klaster)
+//{
+//	for (int i = 0; i < n; i++) {
+//		pixcel.push_back(*(mas + i));
+//	}
+//	q_klaster = n_klaster;
+//	k_pixcel = n;
+//	identify_centers();
+//}
 
-K_means::K_means(int n, rgb * mas, int n_klaster)
-{
-	for (int i = 0; i < n; i++) {
-		pixcel.push_back(*(mas + i));
-	}
-	q_klaster = n_klaster;
-	k_pixcel = n;
-	identify_centers();
-}
+//K_means::K_means(int n_klaster, std::istream & os) : q_klaster(n_klaster)
+//{
+//	rgb temp;
+//	while (os >> temp.r && os >> temp.g && os >> temp.b) {
+//		pixcel.push_back(temp);
+//	}
+//	k_pixcel = pixcel.size();
+//	identify_centers();
+//}
 
-K_means::K_means(int n_klaster, std::istream & os) : q_klaster(n_klaster)
-{
-	rgb temp;
-	while (os >> temp.r && os >> temp.g && os >> temp.b) {
-		pixcel.push_back(temp);
-	}
-	k_pixcel = pixcel.size();
-	identify_centers();
-}
 
-void K_means::clustering(std::ostream & os)
-{
-	os << "\n\nНачало кластеризации:" << std::endl;
 
-	std::vector<int> check_1(k_pixcel, -1);
-	std::vector<int> check_2(k_pixcel, -2);
-	int iter = 0;
 
-	while (true)
-	{
-		os << "\n\n---------------- Итерация №"
-			<< iter << " ----------------\n\n";
-		{
-			for (int j = 0; j < k_pixcel; j++) {
-				double *mas = new double[q_klaster];
 
-				for (int i = 0; i < q_klaster; i++) {
-					*(mas + i) = compute(pixcel[j], centr[i]);
-					os << "Расстояние от пикселя " << j << " к центру #"
-						<< i << ": " << *(mas + i) << std::endl;
-				}
 
-				double min_dist = *mas;
-				int m_k = 0;
-				for (int i = 0; i < q_klaster; i++) {
-					if (min_dist > *(mas + i)) {
-						min_dist = *(mas + i);
-						m_k = i;
-					}
-				}
-				os << "Минимальное расстояние к центру #" << m_k << std::endl;
-				os << "Пересчитываем центр #" << m_k << ": ";
-				centr[m_k].r = compute_s(pixcel[j].r, centr[m_k].r);
-				centr[m_k].g = compute_s(pixcel[j].g, centr[m_k].g);
-				centr[m_k].b = compute_s(pixcel[j].b, centr[m_k].b);
-				os << centr[m_k].r << " " << centr[m_k].g
-					<< " " << centr[m_k].b << std::endl;
-				delete[] mas;
-			}
-
-			int *mass = new int[k_pixcel];
-			os << "\nПроведем классификацию пикселей: " << std::endl;
-			for (int k = 0; k < k_pixcel; k++) {
-				double *mas = new double[q_klaster];
-
-				for (int i = 0; i < q_klaster; i++) {
-					*(mas + i) = compute(pixcel[k], centr[i]);
-					os << "Расстояние от пикселя №" << k << " к центру #"
-						<< i << ": " << *(mas + i) << std::endl;
-				}
-
-				double min_dist = *mas;
-				int m_k = 0;
-				for (int i = 0; i < q_klaster; i++) {
-					if (min_dist > *(mas + i)) {
-						min_dist = *(mas + i);
-						m_k = i;
-					}
-				}
-				mass[k] = m_k;
-				os << "Пиксель №" << k << " ближе всего к центру #" << m_k << std::endl;
-			}
-
-			os << "\nМассив соответствия пикселей и центров: \n";
-			for (int i = 0; i < k_pixcel; i++) {
-				os << mass[i] << " ";
-				check_1[i] = *(mass + i);
-			}
-			os << std::endl << std::endl;
-
-			os << "Результат кластеризации: " << std::endl;
-			int itr = KK + 1;
-			for (int i = 0; i < q_klaster; i++) {
-				os << "Кластер #" << i << std::endl;
-				for (int j = 0; j < k_pixcel; j++) {
-					if (mass[j] == i) {
-						os << pixcel[j].r << " " << pixcel[j].g
-							<< " " << pixcel[j].b << std::endl;
-						mass[j] = ++itr;
-					}
-				}
-			}
-
-			delete[] mass;
-
-			os << "Новые центры: \n";
-			for (int i = 0; i < q_klaster; i++) {
-				os << centr[i].r << " " << centr[i].g
-					<< " " << centr[i].b << " - #" << i << std::endl;
-			}
-		}
-		iter++;
-		if (check_1 == check_2 || iter >= max_iterations) {
-			break;
-		}
-		check_2 = check_1;
-	}
-	os << "\n\nКонец кластеризации." << std::endl;
-}
-
-void K_means::print() const
-{
-	std::cout << "Начальные пиксели: " << std::endl;
-	for (int i = 0; i < k_pixcel; i++) {
-		std::cout << pixcel[i].r << " " << pixcel[i].g
-			<< " " << pixcel[i].b << " - №" << i << std::endl;
-	}
-	std::cout << std::endl << "Случайные начальные центры кластеризации: " << std::endl;
-	for (int i = 0; i < q_klaster; i++) {
-		std::cout << centr[i].r << " " << centr[i].g << " "
-			<< centr[i].b << " - #" << i << std::endl;
-	}
-	std::cout << "\nКоличество кластеров: " << q_klaster << std::endl;
-	std::cout << "Количество пикселей: " << k_pixcel << std::endl;
-}
-
-std::ostream & operator<<(std::ostream & os, const K_means & k)
-{
-	os << "Начальные пиксели: " << std::endl;
-	for (int i = 0; i < k.k_pixcel; i++) {
-		os << k.pixcel[i].r << " " << k.pixcel[i].g
-			<< " " << k.pixcel[i].b << " - №" << i << std::endl;
-	}
-	os << std::endl << "Случайные начальные центры кластеризации: " << std::endl;
-	for (int i = 0; i < k.q_klaster; i++) {
-		os << k.centr[i].r << " " << k.centr[i].g << " "
-			<< k.centr[i].b << " - #" << i << std::endl;
-	}
-	os << "\nКоличество кластеров: " << k.q_klaster << std::endl;
-	os << "Количество пикселей: " << k.k_pixcel << std::endl;
-	return os;
-}
-
-K_means::~K_means()
-{
-}
 
 
 cv::Mat MatrixGrad(cv::Mat& img , int h)
@@ -2896,178 +2765,62 @@ cv::Mat kMeans(cv::Mat& src)
 
 
 
-//cv::Mat superPix(cv::Mat& img)
-//{
-//	cv::Mat matrix_pix(img.size(), CV_8UC1, Scalar(0));
-//	int rows = img.rows;
-//	int cols = img.cols;
-//
-//	for (int i = 0; i < rows; i++)
-//	{
-//		for (int j = 0; j < cols; j++)
-//		{
-//			Point curr_point(i, j);
-//
-//			
-//
-//			float dx1 = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(i + 1, j))) / 2;
-//			float dy1 = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(i, j + 1))) / 2;
-//
-//			float sobol = (sqrt(pow(dx1, 2) + pow(dy1, 2))) - 250;
-//			matrix_pix.at<uint8_t>(curr_point) = static_cast<uint8_t>(sobol - 6) * 10;
-//
-//			int nx, ny;
-//			int m;
-//			nx = 100;
-//			ny = 100;
-//			m = 20;
-//
-//		// Scale to [0,1] and l*a*b colorspace
-//			matrix_pix.convertTo(img, CV_32F, 1 / 255.);
-//		Mat imlab;
-//		cvtColor(matrix_pix, imlab, cv::COLOR_BGR2Lab); //cv::COLOR_BGR2Lab);
-//
-//		int h = matrix_pix.rows;
-//		int w = matrix_pix.cols;
-//		int n = nx * ny;
-//
-//		float dx = w / float(nx);
-//		float dy = h / float(ny);
-//		int S = (dx + dy + 1) / 2; // window width
-//
-//		// Initialize centers
-//		vector<Point> centers;
-//		for (int i = 0; i < ny; i++) 
-//		{
-//			for (int j = 0; j < nx; j++) 
-//			{
-//				centers.push_back(Point(j * dx + dx / 2, i * dy + dy / 2));
-//			}
-//		}
-//
-//		// Initialize labels and distance maps
-//		vector<int> label_vec(n);
-//		for (int i = 0; i < n; i++)
-//			label_vec[i] = i * 255 * 255 / n;
-//
-//		Mat labels = -1 * Mat::ones(imlab.size(), CV_32S);
-//		Mat dists = -1 * Mat::ones(imlab.size(), CV_32F);
-//		Mat window;
-//		Point p1, p2;
-//		Vec3f p1_lab, p2_lab;
-//
-//		// Iterate 10 times. In practice more than enough to converge
-//		for (int i = 0; i < 10; i++) 
-//		{
-//			// For each center...
-//			for (int c = 0; c < n; c++)
-//			{
-//				int label = label_vec[c];
-//				p1 = centers[c];
-//				p1_lab = imlab.at<Vec3f>(p1);
-//				int xmin = max(p1.x - S, 0);
-//				int ymin = max(p1.y - S, 0);
-//				int xmax = min(p1.x + S, w - 1);
-//				int ymax = min(p1.y + S, h - 1);
-//
-//				// Search in a window around the center
-//				window = matrix_pix(Range(ymin, ymax), Range(xmin, xmax));
-//
-//				// Reassign pixels to nearest center
-//				for (int i = 0; i < window.rows; i++)
-//				{
-//					for (int j = 0; j < window.cols; j++)
-//					{
-//						p2 = Point(xmin + j, ymin + i);
-//						p2_lab = imlab.at<Vec3f>(p2);
-//						float d = dist(p1, p2, p1_lab, p2_lab, m, S);
-//						float last_d = dists.at<float>(p2);
-//						if (d < last_d || last_d == -1)
-//						{
-//							dists.at<float>(p2) = d;
-//							labels.at<int>(p2) = label;
-//						}
+		//
+//double; MSE;for (int i = 0; i < img.rows; ++i)
+		//{
+		//	for (int j = 0; j < img.cols; ++j)
+		//	{
+		//		float p1 = img.at<uint8_t>(Point(i,j)) - img.at<uint8_t>(Point(i - 1, j));
+		//		int p2 = img.at<uint8_t>(Point(i,j)) - img.at<uint8_t>(Point(i, j - 1));
+		//		int err = p2 - p1;
+		//		sum_sq += (err * err);
+		//	}
+		//}
+		//MSE = (double)sum_sq / (img.rows * img.cols);
+
+
+//Mat co2D(Mat img, double** kernel, int W) {
+//	Mat filtered_image = img.clone();
+//	// find center position of kernel (half of kernel size)
+//	int kCenterX = W / 2;
+//	int kCenterY = W / 2;
+//	int xx = 0;  
+//	int yy = 0;
+//	cout << endl << "Performing convolution .." << endl;
+//	cout << "Image Size : " << img.rows << ", " << img.cols << endl;
+//	for (int i = 0; i < img.rows; ++i) {
+//		for (int j = 0; j < img.cols; ++j) {
+//			for (int x = 0; x < W; ++x) {
+//				xx = W - 1 - x;
+//				for (int y = 0; y < W; ++y) {
+//					yy = W - 1 - y;
+//					int ii = i + (x - kCenterX);
+//					int jj = j + (y - kCenterY);
+//					if (ii >= 0 && ii < img.rows && jj >= 0 && jj < img.cols) {
+//						filtered_image.at<uint8_t>(Point(j, i)) += img.at<uint8_t>(Point(jj, ii)) * kernel[xx][yy];
 //					}
 //				}
 //			}
 //		}
-//
-//		// Calculate superpixel boundaries
-//		labels.convertTo(labels, CV_32F);
-//		Mat gx, gy, grad;
-//		filter2D(labels, gx, -1, sobel1);
-//		filter2D(labels, gy, -1, sobel1.t());
-//		magnitude(gx, gy, grad);
-//		grad = (grad > 1e-4) / 255;
-//		Mat show = 1 - grad;
-//		show.convertTo(show, CV_32F);
-//
-//		// Draw boundaries on original image
-//		vector<Mat> rgb(3);
-//		split(matrix_pix, rgb);
-//		for (int i = 0; i < 3; i++)
-//			rgb[i] = rgb[i].mul(show);
-//		merge(rgb, matrix_pix);
-//		imshow("result", matrix_pix);
-//		}
-//
 //	}
-//
-//	return matrix_pix;
-//	
+//	return filtered_image;
 //}
 
+cv::Mat calcHough(cv::Mat& img)
+{
+	cv::Mat sub_mat(img.size(), CV_8UC1, Scalar(0));
+	for (int x = 1; x < img.cols - 1; x++)
+	{
+		for (int y = 1; y < img.rows - 1; y++)
+		{
+			Point curr_point(x, y);
+			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
+			float dy = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x, y + 1))) / 2;
 
-Mat myfilter2d(Mat img, Mat filter) {
-	Mat dst = img.clone();
-	cout << " filter data successfully found.  Rows:" << filter.rows << " cols:" << filter.cols << " channels:" << filter.channels() << "\n";
-	cout << " input data successfully found.  Rows:" << img.rows << " cols:" << img.cols << " channels:" << img.channels() << "\n";
-
-	for (int i = 0 - (filter.rows / 2); i < img.rows - (filter.rows / 2); i++) {
-		for (int j = 0 - (filter.cols / 2); j < img.cols - (filter.cols / 2); j++) {  //adding k and l to i and j will make up the difference and allow us to process the whole image
-			float filtertotal = 0;
-			for (int k = 0; k < filter.rows; k++) {
-				for (int l = 0; l < filter.rows; l++) {
-					if (i + k >= 0 && i + k < img.rows && j + l >= 0 && j + l < img.cols) {  //don't try to process pixels off the endge of the map
-						float a = img.at<uint8_t>(i + k, j + l);
-						float b = filter.at<float>(k, l);
-						float product = a * b;
-						filtertotal += product;
-					}
-				}
-			}
-			//filter all proccessed for this pixel, write it to dst
-			dst.at<uint8_t>(i + (filter.rows / 2), j + (filter.cols / 2)) = filtertotal;
-
+			float angle = atan2(dy, dx);
+			float distanse = abs(x * cos(angle) - y * sin(angle));
+			sub_mat.at<uint8_t>(curr_point) += distanse;
 		}
 	}
-	return dst;
-}
-
-
-Mat convolute2D(Mat& img, double** kernel, int W) {
-	Mat filtered_image = img.clone();
-	// find center position of kernel (half of kernel size)
-	int kCenterX = W / 2;
-	int kCenterY = W / 2;
-	int xx = 0;
-	int yy = 0;
-	cout << endl << "Performing convolution .." << endl;
-	cout << "Image Size : " << img.rows << ", " << img.cols << endl;
-	for (int i = 0; i < img.rows; ++i) {
-		for (int j = 0; j < img.cols; ++j) {
-			for (int x = 0; x < W; ++x) {
-				xx = W - 1 - x;
-				for (int y = 0; y < W; ++y) {
-					yy = W - 1 - y;
-					int ii = i + (x - kCenterX);
-					int jj = j + (y - kCenterY);
-					if (ii >= 0 && ii < img.rows && jj >= 0 && jj < img.cols) {
-						filtered_image.at<uint8_t>(Point(j, i)) +=static_cast<uint>( img.at<uint8_t>(Point(jj, ii)) * kernel[xx][yy]);
-					}
-				}
-			}
-		}
-	}
-	return filtered_image;
+	return sub_mat;
 }

@@ -98,12 +98,7 @@ cv::Mat NewFilter(cv::Mat& img);
 std::pair<cv::Mat, cv::Mat> calc5x5Gradient(cv::Mat& img);
 cv::Mat newfil(cv::Mat& img);
 cv::Mat MatrixGrad(cv::Mat& img, int h);
-
-
-Mat kMeans(Mat& img);
-Mat_<Vec3b> k_means(Mat_<Vec3b> & src);
-Mat myfilter2d(Mat& img, Mat &filter);
-
+cv::Mat calcHough(cv::Mat& img);
 
 
 const int N = 50; //количество пикселей для случайной генерации данных
@@ -116,8 +111,8 @@ typedef struct {            //пиксель
 	double b;
 } rgb;
 
-void form_an_image(std::ostream & st); //функция записи в файл 
-									   //каждого пикселя
+//void form_an_image(std::ostream & st); //функция записи в файл 
+//									   //каждого пикселя
 
 class K_means
 {
@@ -146,7 +141,7 @@ public:
 
 
 
-//cv::Mat superPix(cv::Mat& img);
-//Mat myfilter2d(Mat input, Mat filter);
+Mat kMeans(Mat& img);
 
-Mat convolute2D(Mat& img, double** kernel, int W);
+//Methods release
+Mat_<Vec3b> k_means(Mat_<Vec3b> & src);

@@ -3,39 +3,24 @@
 #include <random>
 #include <time.h>
 
+RNG rng(12345);
+
+Mat sobel = (Mat_<float>(3, 3) << -1 / 16., -2 / 16., -1 / 16., 0, 0, 0, 1 / 16., 2 / 16., 1 / 16.);
 
 
-cv::RNG rng(12345);
-
-cv::Mat sobel =  (Mat_<float>(3, 3) << -1 / 16., -2 / 16., -1 / 16., 0, 0, 0, 1 / 16., 2 / 16., 1 / 16.);
 
 float dist(Point p1, Point p2, Vec3f p1_lab, Vec3f p2_lab, float compactness, float S);
 
-cv::Mat methodsSobol(Mat&img);
 
-double sqr(double value) 
-{
-	return value * value;
-}
-
-double sqr_distance(Point first, Point second) 
-{
-	return sqr(first.x - second.x) + sqr(first.y - second.y);
-}
-
-rgb random_rgb() {
-	rgb c;
-	double r;
-
-	c.r = (uchar)rand();
-	c.g = (uchar)rand();
-	c.b = (uchar)rand();
-
-	return c;
-}
-
-void k_means();
-
+//double sqr(double value) 
+//{
+//	return value * value;
+//}
+//
+//double sqr_distance(Point first, Point second) 
+//{
+//	return sqr(first.x - second.x) + sqr(first.y - second.y);
+//}
 
 
 
@@ -82,189 +67,160 @@ int main()
 			throw std::system_error(errno, std::system_category(), file_path);
 		}
 
+		// K_MEANS Good Workkks
+		/*kMeans(src);*/
 		k_means(src);
 		//kMeans(src);
-	
-		//Mat mat_final = myfilter2d(img, img);
-		//Window win_final("SuperPix:");
-		//win_final.show(mat_final);
 
-		//int pixel_index = 0;
-		//for (int y = 0; y < img.rows; y++) 
-		//{
-		//	for (int x = 0; x < img.cols; x++) 
+
+		//Mat samples(src.rows * src.cols, 3, CV_32F);
+		//for (int y = 0; y < src.rows; y++)
+		//	for (int x = 0; x < src.cols; x++)
+		//		for (int z = 0; z < 3; z++)
+		//			samples.at<float>(y + x * src.rows, z) = src.at<Vec3b>(y, x)[z];
+
+
+		//int clusterCount = 3;
+		//Mat labels1;
+		//int attempts = 2;
+		//Mat centers;
+		//kmeans(samples, clusterCount, labels1, TermCriteria(cv::TermCriteria::MAX_ITER +	cv::TermCriteria::EPS, 10000, 0.0001), attempts, KMEANS_PP_CENTERS, centers);
+
+
+		//Mat new_image(src.size(), src.type());
+		//for (int y = 0; y < src.rows; y++)
+		//	for (int x = 0; x < src.cols; x++)
 		//	{
-		//		img.at<uint8_t>[pixel_index][0] = x / img.cols;
-		//		img.at<uint8_t>[pixel_index][1] = y / img.rows;
-		//		img.at<uint8_t>[pixel_index][2] = img.at<uint8_t>(Point(x, y)) / 255.0f;
-		//		img.at<uint8_t>[pixel_index][3] = img.at<uint8_t>(Point(x, y)) / 255.0f;
-		//		img.at<uint8_t>[pixel_index][4] = img.at<uint8_t>(Point(x, y)) / 255.0f;
+		//		int cluster_idx = labels1.at<int>(y + x * src.rows, 0);
+		//		new_image.at<Vec3b>(y, x)[0] = centers.at<float>(cluster_idx, 0);
+		//		new_image.at<Vec3b>(y, x)[1] = centers.at<float>(cluster_idx, 1);
+		//		new_image.at<Vec3b>(y, x)[2] = centers.at<float>(cluster_idx, 2);
 		//	}
-		//}
+		//imshow("clustered image", new_image);
+		//waitKey(0);
+		
+		/*cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 
-		//int const K = 8;
-		//int colors[K];
-	
-		//for (int y = 0; y < img.rows; y++) 
-		//{
-		//	for (int x = 0; x < img.cols; x++) 
-		//	{
-		//		int index = y * img.cols + x;  // This corresponds to pixel_index above
-		//		int cluster_index = labels[index]; // 0 to 7 in your case
-		//		int colors = colors[cluster_index];  // Colors is an array of 8 colors of the clusters
-		//		img.setpixel(x, y, colors);
-		//	}
-		//}
+			int cols = img.cols;
+			int rows = img.rows;
 
+			for (int x = 1; x < cols - 1; x++)
+			{
+				for (int y = 1; y < rows - 1; y++)
+				{
+					vector<uint8_t> arr;
+					for (int i = -1; i <= 1; i++)
+					{
+						for (int j = -1; j <= 1; j++)
+						{
+							auto cur = img.at<uint8_t>(Point(j + x, i + y));
+							arr.push_back(cur);
+						}
+					}
 
+					Point curr_point(x, y);
+					float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
+					float dy = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x, y + 1))) / 2;
+					float sobol = (sqrt(pow(dx, 2) + pow(dy, 2))) - 250;
 
+					mat_mod.at<uint8_t>(curr_point) = static_cast<uint8_t>(sobol - 6) * 10;
 
-		//int sum_sq = 0;
-		//double MSE;
+				}
+			}*/
 
-		//for (int i = 0; i < img.rows; ++i)
-		//{
-		//	for (int j = 0; j < img.cols; ++j)
-		//	{
-		//		float p1 = img.at<uint8_t>(Point(i,j)) - img.at<uint8_t>(Point(i - 1, j));
-		//		int p2 = img.at<uint8_t>(Point(i,j)) - img.at<uint8_t>(Point(i, j - 1));
-		//		int err = p2 - p1;
-		//		sum_sq += (err * err);
-		//	}
-		//}
-		//MSE = (double)sum_sq / (img.rows * img.cols);
+		//TODO Algorithm of SuperPixel
+		int nx, ny;
+		int m;
 
-		//int nx, ny;
-		//int m;
-		//nx = 100;
-		//ny = 100;
-		//m = 20;
-
-		//// Scale to [0,1] and l*a*b colorspace
-		//img.convertTo(img, CV_32F, 1 / 255.);
-		//Mat imlab;
-		//cvtColor(img, imlab, cv::COLOR_BGR2Lab); //cv::COLOR_BGR2Lab);
-
-		//int h = img.rows;
-		//int w = img.cols;
-		//int n = nx * ny;
-
-		//float dx = w / float(nx);
-		//float dy = h / float(ny);
-		//int S = (dx + dy + 1) / 2; // window width
-
-		//// Initialize centers
-		//vector<Point> centers;
-		//for (int i = 0; i < ny; i++) 
-		//{
-		//	for (int j = 0; j < nx; j++) 
-		//	{
-		//		centers.push_back(Point(j * dx + dx / 2, i * dy + dy / 2));
-		//	}
-		//}
-
-		//// Initialize labels and distance maps
-		//vector<int> label_vec(n);
-		//for (int i = 0; i < n; i++)
-		//	label_vec[i] = i * 255 * 255 / n;
-
-		//Mat labels = -1 * Mat::ones(imlab.size(), CV_32S);
-		//Mat dists = -1 * Mat::ones(imlab.size(), CV_32F);
-		//Mat window;
-		//Point p1, p2;
-		//Vec3f p1_lab, p2_lab;
-
-		//// Iterate 10 times. In practice more than enough to converge
-		//for (int i = 0; i < 10; i++) 
-		//{
-		//	// For each center...
-		//	for (int c = 0; c < n; c++)
-		//	{
-		//		int label = label_vec[c];
-		//		p1 = centers[c];
-		//		p1_lab = imlab.at<Vec3f>(p1);
-		//		int xmin = max(p1.x - S, 0);
-		//		int ymin = max(p1.y - S, 0);
-		//		int xmax = min(p1.x + S, w - 1);
-		//		int ymax = min(p1.y + S, h - 1);
-
-		//		// Search in a window around the center
-		//		window = img(Range(ymin, ymax), Range(xmin, xmax));
-
-		//		// Reassign pixels to nearest center
-		//		for (int i = 0; i < window.rows; i++)
-		//		{
-		//			for (int j = 0; j < window.cols; j++)
-		//			{
-		//				p2 = Point(xmin + j, ymin + i);
-		//				p2_lab = imlab.at<Vec3f>(p2);
-		//				float d = dist(p1, p2, p1_lab, p2_lab, m, S);
-		//				float last_d = dists.at<float>(p2);
-		//				if (d < last_d || last_d == -1)
-		//				{
-		//					dists.at<float>(p2) = d;
-		//					labels.at<int>(p2) = label;
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
-
-		//// Calculate superpixel boundaries
-		//labels.convertTo(labels, CV_32F);
-		//Mat gx, gy, grad;
-		//filter2D(labels, gx, -1, sobel);
-		//filter2D(labels, gy, -1, sobel.t());
-		//magnitude(gx, gy, grad);
-		//grad = (grad > 1e-4) / 255;
-		//Mat show = 1 - grad;
-		//show.convertTo(show, CV_32F);
-
-		//// Draw boundaries on original image
-		//vector<Mat> rgb(3);
-		//split(img, rgb);
-		//for (int i = 0; i < 3; i++)
-		//	rgb[i] = rgb[i].mul(show);
-		//merge(rgb, img);
-		//imshow("result", img);
+		// Default values
+		nx = 50;
+		ny = 50;
+		m = 20;
 
 
+		// Scale to [0,1] and l*a*b colorspace
+		img.convertTo(img, CV_32F, 1 / 255.);
+		Mat imlab;
+		cvtColor(img, imlab, COLOR_BGR2Lab);
 
-		//SetConsoleOutputCP(1251);
-		//SetConsoleCP(1251);
+		int h = img.rows;
+		int w = img.cols;
+		int n = nx * ny;
 
-		//rgb mas[8] = {         //тест из массива
-		//	{255, 140, 50},
-		//	{100, 70, 1},
-		//	{150, 20, 200},
-		//	{251, 141, 51},
-		//	{104, 69, 3},
-		//	{153, 22, 210},
-		//	{252, 138, 54},
-		//	{101, 74, 4},
-		//};
-		//K_means image_1(8, mas, 3);
-		////std::cout << image_1;    //вывод на консоль
-		////image_1.clustering(std::cout);
-		//std::ofstream dout;
-		//dout.open("Result_1.txt");
-		//dout << image_1;
-		//image_1.clustering(dout);
+		float dx = w / float(nx);
+		float dy = h / float(ny);
+		int S = (dx + dy + 1) / 2; // window width
 
+		// Initialize centers
+		vector<Point> centers;
+		for (int i = 0; i < ny; i++) {
+			for (int j = 0; j < nx; j++) {
+				centers.push_back(Point(j*dx + dx / 2, i*dy + dy / 2));
+			}
+		}
 
-		//std::ofstream fout;        //тест с случайными данными
-		//fout.open("Image.txt");
-		//form_an_image(fout);       //формирование данных и загрузка в файл
-		//std::ifstream fin;
-		//fin.open("Image.txt");
-		//K_means image_2(KK, fin);  //создание объекта
-		//std::ofstream out;
-		//out.open("Result_2.txt");
-		////std::cout << image_2;    //вывод на консоль
-		////image_2.clustering(std::cout);
-		//out << image_2;
-		//image_2.clustering(out);
+		// Initialize labels and distance maps
+		vector<int> label_vec(n);
+		for (int i = 0; i < n; i++)
+			label_vec[i] = i * 255 * 255 / n;
 
+		Mat labelsX = -1 * Mat::ones(imlab.size(), CV_32S);
+		Mat dists = -1 * Mat::ones(imlab.size(), CV_32F);
+		Mat window;
+		Point p1, p2;
+		Vec3f p1_lab, p2_lab;
+
+		// Iterate 10 times. In practice more than enough to converge
+		for (int i = 0; i < 10; i++) {
+			// For each center...
+			for (int c = 0; c < n; c++)
+			{
+				int label = label_vec[c];
+				p1 = centers[c];
+				p1_lab = imlab.at<Vec3f>(p1);
+				int xmin = max(p1.x - S, 0);
+				int ymin = max(p1.y - S, 0);
+				int xmax = min(p1.x + S, w - 1);
+				int ymax = min(p1.y + S, h - 1);
+
+				// Search in a window around the center
+				window = img(Range(ymin, ymax), Range(xmin, xmax));
+
+				// Reassign pixels to nearest center
+				for (int i = 0; i < window.rows; i++) {
+					for (int j = 0; j < window.cols; j++) {
+						p2 = Point(xmin + j, ymin + i);
+						p2_lab = imlab.at<Vec3f>(p2);
+						float d = dist(p1, p2, p1_lab, p2_lab, m, S);
+						float last_d = dists.at<float>(p2);
+						if (d < last_d || last_d == -1) {
+							dists.at<float>(p2) = d;
+							labelsX.at<int>(p2) = label;
+						}
+					}
+				}
+			}
+		}
+
+		// Calculate superpixel boundaries
+		labelsX.convertTo(labelsX, CV_32F);
+		Mat gx, gy, grad;
+		filter2D(labelsX, gx, -1, sobel); // operator sobel DX
+		filter2D(labelsX, gy, -1, sobel.t()); // operator sobel Dy
+		magnitude(gx, gy, grad);
+		grad = (grad > 1e-4) / 255;
+		Mat show = 1 - grad;
+		show.convertTo(show, CV_32F);
+
+		// Draw boundaries on original image
+		vector<Mat> rgb(2);
+		split(img, rgb);
+		for (int i = 0; i < 2; i++)
+			rgb[i] = rgb[i].mul(show);
+
+		merge(rgb, img);
+
+		imshow("EndImage",img);
 
 		//auto mat_text = calc3x3Gradient(img);
 		//Window win_text("Texture");
@@ -300,25 +256,25 @@ int main()
 		//Window win_final("SuperPix:");
 		//win_final.show(mat_final);
 
-		Mat new_sobel = MatrixGrad(dst, 1);
-		Window win_sobel("Sobel ABS");
-		win_sobel.show(new_sobel);
+		//Mat new_sobel = MatrixGrad(dst, 1);
+		//Window win_sobel("Sobel ABS");
+		//win_sobel.show(new_sobel);
 
-		Mat new_sobel1 = MatrixGrad(dst, 2);
-		Window win_sobel1("Sobel ABS2");
-		win_sobel1.show(new_sobel1);
+		//Mat new_sobel1 = MatrixGrad(dst, 2);
+		//Window win_sobel1("Sobel ABS2");
+		//win_sobel1.show(new_sobel1);
 
-		Mat new_sobel2 = MatrixGrad(dst, 5);
-		Window win_sobel2("Sobel ABS3");
-		win_sobel2.show(new_sobel2);
+		//Mat new_sobel2 = MatrixGrad(dst, 5);
+		//Window win_sobel2("Sobel ABS3");
+		//win_sobel2.show(new_sobel2);
 
-		Mat new_sobel3 = MatrixGrad(dst, 7);
-		Window win_sobel3("Sobel ABS4");
-		win_sobel3.show(new_sobel3);
+		//Mat new_sobel3 = MatrixGrad(dst, 7);
+		//Window win_sobel3("Sobel ABS4");
+		//win_sobel3.show(new_sobel3);
 
-		Mat new_sobel4 = MatrixGrad(dst, 10);
-		Window win_sobel4("Sobel ABS5");
-		win_sobel4.show(new_sobel4);
+		//Mat new_sobel4 = MatrixGrad(dst, 10);
+		//Window win_sobel4("Sobel ABS5");
+		//win_sobel4.show(new_sobel4);
 
 
 
@@ -407,7 +363,7 @@ int main()
 		//dest.convertTo(dest, CV_8U);
 
 		//imshow("final_result", dest);
-		cv::waitKey(0);
+		/*cv::waitKey(0);*/
 
 
 
@@ -593,6 +549,12 @@ int main()
 		//Window win_dilateMXN2("dilateMXN2");
 		//win_dilateMXN2.show(mat_dilateMXN2);
 
+
+		//Mat mat_H = calcHough(img);
+		//Window win("Hough");
+		//win.show(mat_H);
+
+
 		//Mat mat_SUMa2 = dilateGOA(img, 1) ;
 		//Window win_BinSuma2("SUMBin+ X+Y2");
 		//win_BinSuma2.show(mat_SUMa2);
@@ -662,17 +624,27 @@ cv::Mat methodsSobol(Mat&img)
 	return  mat_mod;
 
 }
+
 float dist(Point p1, Point p2, Vec3f p1_lab, Vec3f p2_lab, float compactness, float S)
 {
 	float dl = p1_lab[0] - p2_lab[0];
 	float da = p1_lab[1] - p2_lab[1];
 	float db = p1_lab[2] - p2_lab[2];
-	float d_lab = sqrt(dl*dl + da * da + db * db);
+
+	float d_lab = sqrtf(dl*dl + da * da + db * db);
 
 	float dx = p1.x - p2.x;
 	float dy = p1.y - p2.y;
-	float d_xy = sqrt(dx*dx + dy * dy);
+
+	float d_xy = sqrtf(dx*dx + dy * dy);
 
 	return d_lab + compactness / S * d_xy;
 }
 
+double magGrad(Point p1, Point p2)
+{
+	float dx = p1.x - p2.x;
+	float dy = p1.y - p2.y;
+
+	float grad = sqrtf((dx*dx) + (dy*dy));
+}

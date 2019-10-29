@@ -26,7 +26,9 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		clone = src.clone();
 
 		int no_of_points = src.rows * src.cols;
-		int no_clusters = 7;
+
+		//// количество кластеров
+		int no_clusters = 15;
 		
 		// Get all the points in the image
 		std::vector<pair <Point, Vec3b>> points;
@@ -69,7 +71,7 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		int iter_counter = 0;
 		vector<pair<Vec3b, int>> cl_sizes(no_clusters);
 
-		labels[0] = -1; // Magic
+		labels[0] = -1; 
 		bool labeling_changed;
 
 		const clock_t begin_time = clock();
@@ -154,9 +156,6 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 
 //cv::Mat_<Vec3b> kMeans(Mat_<Vec3b>& src)
 //{
-//	
-//
-//
 //		vector<int> colors;
 //
 //		for (int i = 0; i < src.rows; i++)
@@ -168,8 +167,6 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 //				colors.push_back(src(i, j)[2]);
 //			}
 //		}
-//
-//		cout << colors.size();
 //
 //		vector<Point2i> points;
 //
