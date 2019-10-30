@@ -1,4 +1,4 @@
-#include "Pix.h"
+﻿#include "Pix.h"
 #include <iostream>
 #include <random>
 #include <time.h>
@@ -24,7 +24,7 @@ float dist(Point p1, Point p2, Vec3f p1_lab, Vec3f p2_lab, float compactness, fl
 
 
 
-
+//Histograma
 void showHistogram(const string& name, int* hist, const int  hist_cols, const int hist_height)
 {
 	Mat imgHist(hist_height, hist_cols, CV_8UC3, CV_RGB(255, 255, 255)); // constructs a white image
@@ -68,8 +68,9 @@ int main()
 		}
 
 		// K_MEANS Good Workkks
-		/*kMeans(src);*/
-		k_means(src);
+		//k_means(src);
+
+		//kMeans(src);
 		//kMeans(src);
 
 
@@ -129,12 +130,14 @@ int main()
 			}*/
 
 		//TODO Algorithm of SuperPixel
+		//SLIC methods
+		//Edit Filter2D and Magnitude Split Function
 		int nx, ny;
 		int m;
 
 		// Default values
-		nx = 50;
-		ny = 50;
+		nx = 80;
+		ny = 80;
 		m = 20;
 
 
@@ -205,6 +208,37 @@ int main()
 		// Calculate superpixel boundaries
 		labelsX.convertTo(labelsX, CV_32F);
 		Mat gx, gy, grad;
+
+		/** @brief Создает изображение с ядром.
+
+			Функция применяет произвольный линейный фильтр к изображению.Операция на месте поддерживается.когда
+			апертура частично находится вне изображения, функция интерполирует значения пикселей посторонних
+			в соответствии с указанным режимом границы.
+
+			Функция действительно вычисляет корреляцию, а не свертку :
+
+		f[\ texttt{ dst } (x, y) = \ sum _{ \ stackrel {0 \ leq x '<\ texttt {kernel.cols},} {0 \ leq y' < \ texttt {kernel.rows} } } \ texttt{ kernel } (x ', y') * \ texttt{ src } (x + x'- \ texttt {anchor.x}, y + y' - \ texttt{ anchor.y }) \ f]
+
+			То есть ядро ​​не отражается вокруг точки привязки.Если вам нужна настоящая свертка, переверните
+			ядро с помощью #flip и установите новый якорь на `(kernel.cols - anchor.x - 1, kernel.rows -
+			anchor.y - 1) `.
+
+			Функция использует алгоритм на основе DFT в случае достаточно больших ядер(~`11 x 11` или
+				больше) и прямой алгоритм для небольших ядер.
+
+			@param src входное изображение.
+			@param dst выводит изображение того же размера и того же количества каналов, что и src.
+			@param ddepth желаемая глубина целевого изображения, см. @ref filter_depths "комбинации"
+			ядро свертки @param (или, скорее, корреляционное ядро), одноканальная плавающая точка
+			матрица; если вы хотите применить разные ядра к разным каналам, разделите изображение на
+			Разделяйте цветовые плоскости с помощью разделения и обрабатывайте их индивидуально.
+			@param anchor якорь ядра, который указывает относительную позицию отфильтрованной точки в
+			ядро; якорь должен находиться внутри ядра; значение по умолчанию(-1, -1) означает, что якорь
+			находится в центре ядра.
+			@param delta необязательное значение, добавляемое к отфильтрованным пикселям перед сохранением их в dst.
+			@param borderType метод экстраполяции пикселей, см. #BorderTypes
+			@sa sepFilter2D, dft, matchTemplate
+			*/
 		filter2D(labelsX, gx, -1, sobel); // operator sobel DX
 		filter2D(labelsX, gy, -1, sobel.t()); // operator sobel Dy
 		magnitude(gx, gy, grad);
@@ -213,9 +247,9 @@ int main()
 		show.convertTo(show, CV_32F);
 
 		// Draw boundaries on original image
-		vector<Mat> rgb(2);
+		vector<Mat> rgb(3);
 		split(img, rgb);
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 3; i++)
 			rgb[i] = rgb[i].mul(show);
 
 		merge(rgb, img);

@@ -18,6 +18,8 @@ float dist(Point a, Point b, Vec3b color1, Vec3b color2)
 	return sqrt(ALPHA * pow(a.x - b.x, 2) + ALPHA * pow(a.y - b.y, 2) + pow(color1[0] - color2[0], 2) + pow(color1[1] - color2[1], 2) + pow(color1[2] - color2[2], 2));
 }
 
+//Methods k_means
+
 Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 {
 		cv::Mat_<Vec3b> clone;
