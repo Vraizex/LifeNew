@@ -1,13 +1,16 @@
 ﻿#include "Pix.h"
+#include "image_filters.h"
+#include "convolution.h"
+#include "morphology.h"
 #include <iostream>
 #include <random>
 #include <time.h>
 
+
+
 RNG rng(12345);
 
 Mat sobel = (Mat_<float>(3, 3) << -1 / 16., -2 / 16., -1 / 16., 0, 0, 0, 1 / 16., 2 / 16., 1 / 16.);
-
-
 
 float dist(Point p1, Point p2, Vec3f p1_lab, Vec3f p2_lab, float compactness, float S);
 
@@ -21,8 +24,6 @@ float dist(Point p1, Point p2, Vec3f p1_lab, Vec3f p2_lab, float compactness, fl
 //{
 //	return sqr(first.x - second.x) + sqr(first.y - second.y);
 //}
-
-
 
 //Histograma
 void showHistogram(const string& name, int* hist, const int  hist_cols, const int hist_height)
@@ -51,21 +52,131 @@ void showHistogram(const string& name, int* hist, const int  hist_cols, const in
 int main()
 {
 	try {
+		Sobla_kernal sob;
 		setlocale(LC_ALL, "Russian");
-
+		int gx, gy, sum;
 		/*string file_path = "C:\\Users\\User\\Downloads\\Lenna.png";*/
 		/*std::string file_path = "C:\\Users\\User\\Downloads\\Telegram Desktop\\DataSet_V\\DataSet_V\\img0_.png";*/
 		std::string file_path = "C:\\Users\\User\\Downloads\\im0_.png";
 		std::string file_path1 = "C:\\Users\\User\\Downloads\\im0_.png";
 		cv::Mat labels;
-		cv::Mat img = imread(file_path, 1);
-		cv::Mat dst = imread(file_path, 1);
-		cv::Mat_<Vec3b> src = imread(file_path, 1);
-		
+		cv::Mat img = imread(file_path, 0);
+		cv::Mat img1 = imread(file_path, 0);
+		cv::Mat dst; /*= imread(file_path, 1);*/
+		cv::Mat_<Vec3b> src1 = imread(file_path, 1);
+		cv::Mat src = imread(file_path, 0);
+	
+
 		if (!img.data) // no image loading;
 		{
 			throw std::system_error(errno, std::system_category(), file_path);
 		}
+		dst = src.clone();
+		for (int y = 0; y < img.rows; y++)
+			for (int x = 0; x < img.cols; x++)
+				dst.at<uchar>(y, x) = 0.0;
+
+		for (int y = 1; y < src.rows - 1; y++) 
+		{
+			for (int x = 1; x < src.cols - 1; x++) 
+			{
+				gx = sob.xGradient(src, x, y);
+				gy = sob.yGradient(src, x, y);
+				sum = abs(gx) + abs(gy);
+				sum = sum > 255 ? 255 : sum;
+				sum = sum < 0 ? 0 : sum;
+				dst.at<uchar>(y, x) = sum;
+			}
+		}
+	
+		namedWindow("Sobel");
+		imshow("Sobel", dst);
+
+		//namedWindow("initial");
+		//imshow("initial", img);
+
+
+		float Kernel[3][3] = 
+		{
+							//{ 0.003, 0.013, 0.022 , 0.013, 0.003}, //gaussian
+							//{ 0.013, 0.013, 0.097 , 0.013, 0.013},
+							//{ 0.022, 0.097, 0.159 , 0.097, 0.022},
+							//{ 0.013, 0.013, 0.097 , 0.013, 0.013},
+							//{ 0.003, 0.013, 0.022 , 0.013, 0.003},
+
+			//{ -1/10, -2/10, -1 }, //other filter
+			//{ -2/10, 22/10, -2 },
+			//{ -1/10, -2/10, -1 },
+
+			//{ 0, 0, 1, 1, 1, 0, 0},
+			//{ 0, 1, 1, 1, 1, 1, 0},
+			//{ 1, 1, 1, 1, 1, 1, 1},
+			//{ 1, 1, 1, 1, 1, 1, 1},
+			//{ 1, 1, 1, 1, 1, 1, 1},
+			//{ 0, 1, 1, 1, 1, 1, 0},
+			//{ 0, 0, 1, 1, 1, 0, 0}
+
+
+				//{ 1 / 256, 4 / 256, 6 / 256, 4 / 256, 1 / 256},
+				//{ 4 / 256, 16 / 256, 24 / 256, 16 / 256, 4 / 256},
+				//{ 6 / 256, 24 / 256, 36 / 256, 24 / 256, 6 / 256},
+				//{ 4 / 256, 16 / 256, 24 / 256, 16 / 256, 4 / 256},
+				//{ 1 / 256, 4 / 256, 6 / 256, 4 / 256, 1 / 256}
+
+
+			//{ 0, 1, 0},
+			//{ 1, -2, 4},
+			//{ 0, 1, 0},
+
+			{ 1, 0, 1},
+			{ 0, -6, 0},
+			{ 1, 0, 1},
+
+
+			//{ 0, 1, 1, 2, 2, 2, 1, 1, 0},
+			//{ 1, 2, 4, 5, 5, 5, 4, 2, 1},
+			//{ 1, 4, 5, 3, 0, 3, 5, 4, 1},
+			//{ 2, 5, 3, -12, -24, -12, 3, 5, 2},
+			//{ 2, 5, 0, -24, -40, -24, 0, 5, 2},
+			//{ 2, 5, 3, -12, -24, -12, 3, 5, 2},
+			//{ 1, 4, 5, 3, 0, 3, 5, 4, 1},
+			//{ 1, 2, 4, 5, 5, 5, 4, 2, 1},
+			//{ 0, 1, 1, 2, 2, 2, 1, 1, 0},
+			//{ 3, -2, -6 }, //my filter
+			//{ 3, 10, 2 },
+			//{ -3, -2, -8 },
+			
+			
+		/*	{ 4, 3, 2, 1, 0, -1, -2, -3, -4},
+			{ 5, 4, 3, 2, 0, -2, -3, -4, -5},
+			{ 6, 5, 4, 3, 0, -3, -4, -5, -6},
+			{ 7, 6, 5, 4, 0, -4, -5, -6, -7},
+			{ 8, 7, 6, 5, 0, -5, -6, -7, -8},
+			{ 7, 6, 5, 4, 0, -4, -5, -6, -7},
+			{ 6, 5, 4, 3, 0, -3, -4, -5, -6},
+			{ 5, 4, 3, 2, 0, -2, -3, -4, -5},
+			{ 4, 3, 2, 1, 0, -1, -2, -3, -4},*/
+		
+		
+			//{-5,-4, 0, 4, 5},
+			//{-8,-10, 0, 10, 8},
+			//{-10,-20, 0, 20, 10},
+			//{-8,-10, 0, 10, 8},
+			//{-5,-4, 0, 4, 5}
+		};
+
+		dst = img.clone();
+		for (int y = 0; y < img.rows; y++)
+			for (int x = 0; x < img.cols; x++)
+				dst.at<uchar>(y, x) = 0.0;
+
+		sob.circularIndexing(img, dst, Kernel);
+
+		namedWindow("Kernal for image");
+		imshow("Kernal for image", dst);
+
+		namedWindow("Just image");
+		imshow("Just image", img);
 
 		// K_MEANS Good Workkks
 		//k_means(src);
@@ -102,12 +213,10 @@ int main()
 		
 		/*cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 
-			int cols = img.cols;
-			int rows = img.rows;
 
-			for (int x = 1; x < cols - 1; x++)
+			for (int x = 1; x < img.cols - 1; x++)
 			{
-				for (int y = 1; y < rows - 1; y++)
+				for (int y = 1; y < img.rows - 1; y++)
 				{
 					vector<uint8_t> arr;
 					for (int i = -1; i <= 1; i++)
@@ -132,129 +241,129 @@ int main()
 		//TODO Algorithm of SuperPixel
 		//SLIC methods
 		//Edit Filter2D and Magnitude Split Function
-		int nx, ny;
-		int m;
+		//int nx, ny;
+		//int m;
 
-		// Default values
-		nx = 80;
-		ny = 80;
-		m = 20;
+		//// Default values
+		//nx = 80;
+		//ny = 80;
+		//m = 20;
 
 
-		// Scale to [0,1] and l*a*b colorspace
-		img.convertTo(img, CV_32F, 1 / 255.);
-		Mat imlab;
-		cvtColor(img, imlab, COLOR_BGR2Lab);
+		//// Scale to [0,1] and l*a*b colorspace
+		//img.convertTo(img, CV_32F, 1 / 255.);
+		//Mat imlab;
+		//cvtColor(img, imlab, COLOR_BGR2Lab);
 
-		int h = img.rows;
-		int w = img.cols;
-		int n = nx * ny;
+		//int h = img.rows;
+		//int w = img.cols;
+		//int n = nx * ny;
 
-		float dx = w / float(nx);
-		float dy = h / float(ny);
-		int S = (dx + dy + 1) / 2; // window width
+		//float dx = w / float(nx);
+		//float dy = h / float(ny);
+		//int S = (dx + dy + 1) / 2; // window width
 
-		// Initialize centers
-		vector<Point> centers;
-		for (int i = 0; i < ny; i++) {
-			for (int j = 0; j < nx; j++) {
-				centers.push_back(Point(j*dx + dx / 2, i*dy + dy / 2));
-			}
-		}
+		//// Initialize centers
+		//vector<Point> centers;
+		//for (int i = 0; i < ny; i++) {
+		//	for (int j = 0; j < nx; j++) {
+		//		centers.push_back(Point(j*dx + dx / 2, i*dy + dy / 2));
+		//	}
+		//}
 
-		// Initialize labels and distance maps
-		vector<int> label_vec(n);
-		for (int i = 0; i < n; i++)
-			label_vec[i] = i * 255 * 255 / n;
+		//// Initialize labels and distance maps
+		//vector<int> label_vec(n);
+		//for (int i = 0; i < n; i++)
+		//	label_vec[i] = i * 255 * 255 / n;
 
-		Mat labelsX = -1 * Mat::ones(imlab.size(), CV_32S);
-		Mat dists = -1 * Mat::ones(imlab.size(), CV_32F);
-		Mat window;
-		Point p1, p2;
-		Vec3f p1_lab, p2_lab;
+		//Mat labelsX = -1 * Mat::ones(imlab.size(), CV_32S);
+		//Mat dists = -1 * Mat::ones(imlab.size(), CV_32F);
+		//Mat window;
+		//Point p1, p2;
+		//Vec3f p1_lab, p2_lab;
 
-		// Iterate 10 times. In practice more than enough to converge
-		for (int i = 0; i < 10; i++) {
-			// For each center...
-			for (int c = 0; c < n; c++)
-			{
-				int label = label_vec[c];
-				p1 = centers[c];
-				p1_lab = imlab.at<Vec3f>(p1);
-				int xmin = max(p1.x - S, 0);
-				int ymin = max(p1.y - S, 0);
-				int xmax = min(p1.x + S, w - 1);
-				int ymax = min(p1.y + S, h - 1);
+		//// Iterate 10 times. In practice more than enough to converge
+		//for (int i = 0; i < 10; i++) {
+		//	// For each center...
+		//	for (int c = 0; c < n; c++)
+		//	{
+		//		int label = label_vec[c];
+		//		p1 = centers[c];
+		//		p1_lab = imlab.at<Vec3f>(p1);
+		//		int xmin = max(p1.x - S, 0);
+		//		int ymin = max(p1.y - S, 0);
+		//		int xmax = min(p1.x + S, w - 1);
+		//		int ymax = min(p1.y + S, h - 1);
 
-				// Search in a window around the center
-				window = img(Range(ymin, ymax), Range(xmin, xmax));
+		//		// Search in a window around the center
+		//		window = img(Range(ymin, ymax), Range(xmin, xmax));
 
-				// Reassign pixels to nearest center
-				for (int i = 0; i < window.rows; i++) {
-					for (int j = 0; j < window.cols; j++) {
-						p2 = Point(xmin + j, ymin + i);
-						p2_lab = imlab.at<Vec3f>(p2);
-						float d = dist(p1, p2, p1_lab, p2_lab, m, S);
-						float last_d = dists.at<float>(p2);
-						if (d < last_d || last_d == -1) {
-							dists.at<float>(p2) = d;
-							labelsX.at<int>(p2) = label;
-						}
-					}
-				}
-			}
-		}
+		//		// Reassign pixels to nearest center
+		//		for (int i = 0; i < window.rows; i++) {
+		//			for (int j = 0; j < window.cols; j++) {
+		//				p2 = Point(xmin + j, ymin + i);
+		//				p2_lab = imlab.at<Vec3f>(p2);
+		//				float d = dist(p1, p2, p1_lab, p2_lab, m, S);
+		//				float last_d = dists.at<float>(p2);
+		//				if (d < last_d || last_d == -1) {
+		//					dists.at<float>(p2) = d;
+		//					labelsX.at<int>(p2) = label;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 
-		// Calculate superpixel boundaries
-		labelsX.convertTo(labelsX, CV_32F);
-		Mat gx, gy, grad;
+		//// Calculate superpixel boundaries
+		//labelsX.convertTo(labelsX, CV_32F);
+		//Mat gx, gy, grad;
 
-		/** @brief Создает изображение с ядром.
+		///** @brief Создает изображение с ядром.
 
-			Функция применяет произвольный линейный фильтр к изображению.Операция на месте поддерживается.когда
-			апертура частично находится вне изображения, функция интерполирует значения пикселей посторонних
-			в соответствии с указанным режимом границы.
+		//	Функция применяет произвольный линейный фильтр к изображению.Операция на месте поддерживается, когда
+		//	апертура частично находится вне изображения, функция интерполирует значения пикселей посторонних
+		//	в соответствии с указанным режимом границы.
 
-			Функция действительно вычисляет корреляцию, а не свертку :
+		//	Функция действительно вычисляет корреляцию, а не свертку :
 
-		f[\ texttt{ dst } (x, y) = \ sum _{ \ stackrel {0 \ leq x '<\ texttt {kernel.cols},} {0 \ leq y' < \ texttt {kernel.rows} } } \ texttt{ kernel } (x ', y') * \ texttt{ src } (x + x'- \ texttt {anchor.x}, y + y' - \ texttt{ anchor.y }) \ f]
+		//f[\ texttt{ dst } (x, y) = \ sum _{ \ stackrel {0 \ leq x '<\ texttt {kernel.cols},} {0 \ leq y' < \ texttt {kernel.rows} } } \ texttt{ kernel } (x ', y') * \ texttt{ src } (x + x'- \ texttt {anchor.x}, y + y' - \ texttt{ anchor.y }) \ f]
 
-			То есть ядро ​​не отражается вокруг точки привязки.Если вам нужна настоящая свертка, переверните
-			ядро с помощью #flip и установите новый якорь на `(kernel.cols - anchor.x - 1, kernel.rows -
-			anchor.y - 1) `.
+		//	То есть ядро ​​не отражается вокруг точки привязки.Если вам нужна настоящая свертка, переверните
+		//	ядро с помощью #flip и установите новый якорь на `(kernel.cols - anchor.x - 1, kernel.rows -
+		//	anchor.y - 1) `.
 
-			Функция использует алгоритм на основе DFT в случае достаточно больших ядер(~`11 x 11` или
-				больше) и прямой алгоритм для небольших ядер.
+		//	Функция использует алгоритм на основе DFT в случае достаточно больших ядер(~`11 x 11` или
+		//		больше) и прямой алгоритм для небольших ядер.
 
-			@param src входное изображение.
-			@param dst выводит изображение того же размера и того же количества каналов, что и src.
-			@param ddepth желаемая глубина целевого изображения, см. @ref filter_depths "комбинации"
-			ядро свертки @param (или, скорее, корреляционное ядро), одноканальная плавающая точка
-			матрица; если вы хотите применить разные ядра к разным каналам, разделите изображение на
-			Разделяйте цветовые плоскости с помощью разделения и обрабатывайте их индивидуально.
-			@param anchor якорь ядра, который указывает относительную позицию отфильтрованной точки в
-			ядро; якорь должен находиться внутри ядра; значение по умолчанию(-1, -1) означает, что якорь
-			находится в центре ядра.
-			@param delta необязательное значение, добавляемое к отфильтрованным пикселям перед сохранением их в dst.
-			@param borderType метод экстраполяции пикселей, см. #BorderTypes
-			@sa sepFilter2D, dft, matchTemplate
-			*/
-		filter2D(labelsX, gx, -1, sobel); // operator sobel DX
-		filter2D(labelsX, gy, -1, sobel.t()); // operator sobel Dy
-		magnitude(gx, gy, grad);
-		grad = (grad > 1e-4) / 255;
-		Mat show = 1 - grad;
-		show.convertTo(show, CV_32F);
+		//	@param src входное изображение.
+		//	@param dst выводит изображение того же размера и того же количества каналов, что и src.
+		//	@param ddepth желаемая глубина целевого изображения, см. @ref filter_depths "комбинации"
+		//	ядро свертки @param (или, скорее, корреляционное ядро), одноканальная плавающая точка
+		//	матрица; если вы хотите применить разные ядра к разным каналам, разделите изображение на
+		//	Разделяйте цветовые плоскости с помощью разделения и обрабатывайте их индивидуально.
+		//	@param anchor якорь ядра, который указывает относительную позицию отфильтрованной точки в
+		//	ядро; якорь должен находиться внутри ядра; значение по умолчанию(-1, -1) означает, что якорь
+		//	находится в центре ядра.
+		//	@param delta необязательное значение, добавляемое к отфильтрованным пикселям перед сохранением их в dst.
+		//	@param borderType метод экстраполяции пикселей, см. #BorderTypes
+		//	@sa sepFilter2D, dft, matchTemplate
+		//	*/
+		//filter2D(labelsX, gx, -1, sobel); // operator sobel DX
+		//filter2D(labelsX, gy, -1, sobel.t()); // operator sobel Dy
+		//magnitude(gx, gy, grad);
+		//grad = (grad > 1e-4) / 255;
+		//Mat show = 1 - grad;
+		//show.convertTo(show, CV_32F);
 
-		// Draw boundaries on original image
-		vector<Mat> rgb(3);
-		split(img, rgb);
-		for (int i = 0; i < 3; i++)
-			rgb[i] = rgb[i].mul(show);
+		//// Draw boundaries on original image
+		//vector<Mat> rgb(3);
+		//split(img, rgb);
+		//for (int i = 0; i < 3; i++)
+		//	rgb[i] = rgb[i].mul(show);
 
-		merge(rgb, img);
+		//merge(rgb, img);
 
-		imshow("EndImage",img);
+		//imshow("EndImage",img);
 
 		//auto mat_text = calc3x3Gradient(img);
 		//Window win_text("Texture");
@@ -682,3 +791,4 @@ double magGrad(Point p1, Point p2)
 
 	float grad = sqrtf((dx*dx) + (dy*dy));
 }
+

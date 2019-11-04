@@ -150,7 +150,7 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		// Compute number of seconds spent on computing
 		cout << float(clock() - begin_time) / CLOCKS_PER_SEC;
 		// Display clone
-		imshow("clone", clone);
+		imshow("ClusterImage", clone);
 
 		waitKey(0);
 	

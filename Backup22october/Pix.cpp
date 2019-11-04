@@ -1,5 +1,8 @@
-
+Ôªø
 #include "Pix.h"
+#include "image_filters.h"
+#include "convolution.h"
+#include "morphology.h"
 
 #include <random>
 #include <stdlib.h>
@@ -7,7 +10,7 @@
 #include <algorithm>
 #include <vector>
 
-float sgn(float x) // ÒË„ÌÓË‰‡
+float sgn(float x) // —Å–∏–≥–Ω–æ–∏–¥–∞
 {
 	float res = 0;
 	if (x == 0)
@@ -24,7 +27,7 @@ float sgn(float x) // ÒË„ÌÓË‰‡
 	}
 	return res;
 }
-float soft_shrink(float d, float T) // Ãˇ„ÍÓÂ ÓÒÎ‡·ÎÂÌËÂ
+float soft_shrink(float d, float T) // –ú—è–≥–∫–æ–µ –æ—Å–ª–∞–±–ª–µ–Ω–∏–µ
 {
 	float res;
 	if (fabs(d) > T)
@@ -37,7 +40,7 @@ float soft_shrink(float d, float T) // Ãˇ„ÍÓÂ ÓÒÎ‡·ÎÂÌËÂ
 	}
 	return res;
 }
-float hard_shrink(float d, float T) // ∆ÂÒÚÍÓÂ ÓÒÎ‡·ÎÂÌËÂ
+float hard_shrink(float d, float T) // –ñ–µ—Å—Ç–∫–æ–µ –æ—Å–ª–∞–±–ª–µ–Ω–∏–µ
 {
 	float res;
 	if (fabs(d) > T)
@@ -51,7 +54,7 @@ float hard_shrink(float d, float T) // ∆ÂÒÚÍÓÂ ÓÒÎ‡·ÎÂÌËÂ
 
 	return res;
 }
-float Garrot_shrink(float d, float T) // ŒÒÎ‡·ÎÂÌËÂ ÍÓ˝ÙÙËˆËÂÌÚÓ‚ ÔÓ √‡ÓÚ‡
+float Garrot_shrink(float d, float T) // –û—Å–ª–∞–±–ª–µ–Ω–∏–µ –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç–æ–≤ –ø–æ –ì–∞—Ä—Ä–æ—Ç–∞
 {
 	float res;
 	if (fabs(d) > T)
@@ -112,15 +115,13 @@ std::pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img)
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 	cv::Mat mat_angle(img.size(), CV_8UC1, Scalar(0));
 
-	int cols = img.cols;
-	int rows = img.rows;
 
 	float max_angle = numeric_limits<double>::min();
 	float min_angle = numeric_limits<double>::max();
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			vector<uint8_t> arr;
 			for (int i = -1; i <= 1; i++)
@@ -164,7 +165,7 @@ std::pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img)
 	return { mat_mod, mat_angle };
 }
 
-cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter) // ¬ÂÈ‚ÎÂÚ-ÔÂÓ·‡ÁÓ‚‡ÌËÂ
+cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter) // –í–µ–π–≤–ª–µ—Ç-–ø—Ä–µ–æ–±—Ä–∞–∑–æ–≤–∞–Ω–∏–µ
 {
 	
 	float c,b, dh, dv, dd;
@@ -204,7 +205,7 @@ cv::Mat cvInvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter, int SHRINKAGE_TY
 	int width = img.cols;
 	int height = img.rows;
 
-	// NIter -  ÓÎË˜ÂÒÚ‚Ó ËÚÂ‡ˆËÈ ÔÂÓ·‡ÁÓ‚‡ÌËˇ
+	// NIter - –ö–æ–ª–∏—á–µ—Å—Ç–≤–æ –∏—Ç–µ—Ä–∞—Ü–∏–π –ø—Ä–µ–æ–±—Ä–∞–∑–æ–≤–∞–Ω–∏—è
 
 	for (int k = NIter; k > 0; k--)
 	{
@@ -217,7 +218,7 @@ cv::Mat cvInvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter, int SHRINKAGE_TY
 				dv = img.at<uint8_t>(y + (height >> k), x);
 				dd = img.at<uint8_t>(y + (height >> k), x + (width >> k));
 
-				// ŒÒÎ‡·ÎˇÂÏ ÍÓ˝ÙÙËˆËÂÌÚ˚ (shrinkage)
+				// –û—Å–ª–∞–±–ª—è–µ–º –∫–æ—ç—Ñ—Ñ–∏—Ü–∏–µ–Ω—Ç—ã (shrinkage)
 				switch (SHRINKAGE_TYPE)
 				{
 				case HARD:
@@ -255,12 +256,9 @@ cv::Mat calcSOBOL(cv::Mat& img)
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 
 
-	int cols = img.cols;
-	int rows = img.rows;
-
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			vector<uint8_t> arr;
 			for (int i = -1; i <= 1; i++)
@@ -294,14 +292,9 @@ cv::Mat calcPrevitta(cv::Mat& img)
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 
 
-	int cols = img.cols;
-	int rows = img.rows;
-
-
-
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			vector<uint8_t> arr;
 			for (int i = -1; i <= 1; i++)
@@ -702,14 +695,10 @@ cv::Mat calc3x3GradientSOBOLBinAndMatrix(cv::Mat& img)
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 
 
-	int cols = img.cols;
-	int rows = img.rows;
 
-
-
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			vector<uint8_t> arr;
 			for (int i = -1; i <= 1; i++)
@@ -1046,9 +1035,9 @@ cv::Mat dilateXY(cv::Mat& img) {
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -1066,13 +1055,12 @@ cv::Mat dilate3X3Y(cv::Mat& img) {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 
-	int cols = img.cols;
-	int rows = img.rows;
 
 
-	for (int x = 2; x < cols - 2; x++)
+
+	for (int x = 2; x < img.cols - 2; x++)
 	{
-		for (int y = 2; y < rows - 2; y++)
+		for (int y = 2; y < img.rows - 2; y++)
 		{
 			Point curr_point(x, y);
 
@@ -1127,9 +1115,9 @@ cv::Mat dilate3X3Y(cv::Mat& img) {
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -1144,13 +1132,11 @@ cv::Mat dilate3X3Y(cv::Mat& img) {
 cv::Mat dilateGOA(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1193,9 +1179,9 @@ cv::Mat dilateGOA(cv::Mat& img, int k)
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -1209,12 +1195,11 @@ cv::Mat dilateGOA(cv::Mat& img, int k)
 cv::Mat dilateAndErozia(cv::Mat& img, int k, int z)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1258,9 +1243,9 @@ cv::Mat dilateAndErozia(cv::Mat& img, int k, int z)
 	}
 
 
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			Point curr_point(x, y);
 			
@@ -1290,9 +1275,9 @@ cv::Mat dilateAndErozia(cv::Mat& img, int k, int z)
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
@@ -1309,13 +1294,11 @@ cv::Mat dilateAndErozia(cv::Mat& img, int k, int z)
 cv::Mat dilateEroziaLevel(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
 	
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1362,9 +1345,9 @@ cv::Mat dilateEroziaLevel(cv::Mat& img, int k)
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -1378,13 +1361,13 @@ cv::Mat dilateEroziaLevel(cv::Mat& img, int k)
 cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+	//int cols = img.cols;
+	//int rows = img.rows;
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1419,8 +1402,10 @@ cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 							m >= 0 &&
 							l < mat_start.cols &&
 							m < mat_start.rows &&
-							mat_start.at<uint8_t>(Point(l, m)) == 255)
+							mat_start.at<uint8_t>(Point(l, m)) == 255) 
+						{
 							mat_start.at<uint8_t>(Point(l, m)) = 2;
+						}
 						
 					}
 				}
@@ -1430,9 +1415,9 @@ cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 	}
 
 
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			Point curr_point(x, y);
 
@@ -1454,18 +1439,19 @@ cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 							m >= 0 &&
 							l < mat_start.cols &&
 							m < mat_start.rows &&
-							mat_start.at<uint8_t>(Point(l, m)) == 0)
-
+							mat_start.at<uint8_t>(Point(l, m)) == 0) 
+						{
 							mat_start.at<uint8_t>(Point(l, m)) = 2;
+						}
 
 					}
 				}
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
@@ -1478,11 +1464,10 @@ cv::Mat EroziaAndDilate(cv::Mat& img, int k, int z)
 
 }
 
-cv::Mat Bin(cv::Mat& img)
+cv::Mat Binarizathion(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	double GX1[3][3] = { { 1, 2, 1 },{ 0, 0, 0 },{ -1, -2, -1 } };
 	double GY1[3][3] = { { 1, 0, -1 },{ 2, 0, -2 },{ 1, 0, -1 } };
@@ -1491,9 +1476,9 @@ cv::Mat Bin(cv::Mat& img)
 	double GY[3][3] = { { -3, 0, 3 },{ -10, 0, 10 },{ -3, 0, 3 } };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 
 			Point curr_point(x, y);
@@ -1527,12 +1512,11 @@ cv::Mat dilateMXN(cv::Mat& img, int k, int z)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1578,9 +1562,9 @@ cv::Mat dilateMXN(cv::Mat& img, int k, int z)
 	}
 
 
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			Point curr_point(x, y);
 
@@ -1610,9 +1594,9 @@ cv::Mat dilateMXN(cv::Mat& img, int k, int z)
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
@@ -1638,9 +1622,9 @@ cv::Mat NewSobol(cv::Mat& img)
 	double GY[3][3] = { { -3, 0, 3 },{ -10, 0, 10 },{ -3, 0, 3 } };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) *  GX1[3][3];
@@ -1659,16 +1643,15 @@ cv::Mat NewShar(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	double GX[3][3] = { { -3, -10, -3 },{ 0, 0, 0 },{ 3, 10, 3 } };
 	double GY[3][3] = { { -3, 0, 3 },{ -10, 0, 10 },{ -3, 0, 3 } };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = ((img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) *  GX[3][3] )/2;
@@ -1695,10 +1678,6 @@ cv::Mat NewShar(cv::Mat& img)
 cv::Mat NewGradientPrevitta(cv::Mat& img)
 {
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
-
-
-	int cols = img.cols;
-	int rows = img.rows;
 
 	double E[3][3] = {
 	{ -3, -3, 5 },
@@ -1734,9 +1713,9 @@ cv::Mat NewGradientPrevitta(cv::Mat& img)
 	{ -3, 5, 5 } };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			
 
@@ -1815,8 +1794,7 @@ cv::Mat BinandDeleteOnlyPixels(cv::Mat& img)
 
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	double GX1[3][3] = { { 1, 2, 1 },{ 0, 0, 0 },{ -1, -2, -1 } };
 	double GY1[3][3] = { { 1, 0, -1 },{ 2, 0, -2 },{ 1, 0, -1 } };
@@ -1825,9 +1803,9 @@ cv::Mat BinandDeleteOnlyPixels(cv::Mat& img)
 	double GY[3][3] = { { -3, 0, 3 },{ -10, 0, 10 },{ -3, 0, 3 } };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) * GX1[3][3];
@@ -1869,9 +1847,9 @@ cv::Mat BinandDeleteOnlyPixels(cv::Mat& img)
 			}
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -1886,12 +1864,11 @@ cv::Mat lagrange2(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
-	for (int x = 2; x < cols - 2; x++)
+
+	for (int x = 2; x < img.cols - 2; x++)
 	{
-		for (int y = 2; y < rows - 2; y++)
+		for (int y = 2; y < img.rows - 2; y++)
 		{
 			Point curr_point(x, y);
 
@@ -1937,12 +1914,11 @@ cv::Mat Catmull_Rom(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -1985,12 +1961,11 @@ cv::Mat B_Spline(cv::Mat& img)
 {
 
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
-	for (int x = 2; x < cols - 2; x++)
+
+	for (int x = 2; x < img.cols - 2; x++)
 	{
-		for (int y = 2; y < rows - 2; y++)
+		for (int y = 2; y < img.rows - 2; y++)
 		{
 			Point curr_point(x, y);
 			float dx = (img.at<uint8_t>(curr_point) - img.at<uint8_t>(Point(x + 1, y))) / 2;
@@ -2043,13 +2018,12 @@ cv::Mat B_Spline(cv::Mat& img)
 cv::Mat dilateBiz(cv::Mat& img, int k)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			
@@ -2101,9 +2075,9 @@ cv::Mat dilateBiz(cv::Mat& img, int k)
 
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
 			{
@@ -2119,13 +2093,12 @@ cv::Mat dilateBiz(cv::Mat& img, int k)
 cv::Mat Splines(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 
@@ -2167,13 +2140,12 @@ cv::Mat LOGLith(cv::Mat& img)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	cv::Mat mat_f(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
 
 
-	for (int x = 1; x < cols - 1; x++)
+
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 
@@ -2209,8 +2181,7 @@ cv::Mat LOGLith(cv::Mat& img)
 cv::Mat calcKircsha(cv::Mat& img, int k, int z) //operator Kircsha
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 	
 	double E[3][3] = {
 	{ -3, -3, 5 },
@@ -2245,9 +2216,9 @@ cv::Mat calcKircsha(cv::Mat& img, int k, int z) //operator Kircsha
 	{ -3, 0, 5 },
 	{ -3, 5, 5 } };
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 			
@@ -2296,9 +2267,9 @@ cv::Mat calcKircsha(cv::Mat& img, int k, int z) //operator Kircsha
 
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
@@ -2316,8 +2287,7 @@ cv::Mat calcKircsha(cv::Mat& img, int k, int z) //operator Kircsha
 cv::Mat calcRobinsone(cv::Mat& img, int k) //operator Robinsone
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 	double E[3][3] = {
 	{ -1, 0, 1 },
 	{ -2, 0, 2 },
@@ -2351,9 +2321,9 @@ cv::Mat calcRobinsone(cv::Mat& img, int k) //operator Robinsone
 	{ -1, 0, 1 },
 	{ 0, 1, 2 } };
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 
@@ -2402,9 +2372,9 @@ cv::Mat calcRobinsone(cv::Mat& img, int k) //operator Robinsone
 
 		}
 	}
-	for (int x = 0; x < cols; x++)
+	for (int x = 0; x < img.cols; x++)
 	{
-		for (int y = 0; y < rows; y++)
+		for (int y = 0; y < img.rows; y++)
 		{
 
 			if (mat_start.at<uint8_t>(Point(x, y)) == 2)
@@ -2422,15 +2392,14 @@ cv::Mat calcRobinsone(cv::Mat& img, int k) //operator Robinsone
 cv::Mat MarrHildeth(cv::Mat& img, float sigm)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	GaussianBlur(img, img, Size(3, 3), 25);
 	//TODO create filter GaussianBlur(Size(3,3), 25);
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 		
 			Point curr_point(x, y);
@@ -2450,14 +2419,13 @@ cv::Mat MarrHildeth(cv::Mat& img, float sigm)
 cv::Mat MarrHildrethNew(cv::Mat& img, float sigm)
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 	
 	GaussianBlur(img, img, Size(3, 3), 25);
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 
 			Point curr_point(x, y);
@@ -2479,8 +2447,7 @@ cv::Mat MarrHildrethNew(cv::Mat& img, float sigm)
 cv::Mat NewFilter(cv::Mat& img) //used filter Laplassian and Gaussian
 {
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	int Gx[3][3] = {
 		{0,-1,0},
@@ -2492,9 +2459,9 @@ cv::Mat NewFilter(cv::Mat& img) //used filter Laplassian and Gaussian
 		{-1,-1,-1} };
 
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 
 			Point curr_point(x, y);
@@ -2517,15 +2484,14 @@ std::pair<cv::Mat, cv::Mat> calc5x5Gradient(cv::Mat& img)
 	cv::Mat mat_mod(img.size(), CV_8UC1, Scalar(0));
 	cv::Mat mat_angle(img.size(), CV_8UC1, Scalar(0));
 
-	int cols = img.cols;
-	int rows = img.rows;
+
 
 	float max_angle = numeric_limits<double>::min();
 	float min_angle = numeric_limits<double>::max();
 
-	for (int x = 2; x < cols - 2; x++)
+	for (int x = 2; x < img.cols - 2; x++)
 	{
-		for (int y = 2; y < rows - 2; y++)
+		for (int y = 2; y < img.rows - 2; y++)
 		{
 			vector<uint8_t> arr;
 			for (int i = -2; i <= 2; i++)
@@ -2577,13 +2543,12 @@ cv::Mat newfil(Mat &img)
 	cv::Mat mat_start(img.size(), CV_8UC1, Scalar(0));
 	cv::Mat mat_sub(img.size(), CV_8UC1, Scalar(0));
 	
-	int cols = img.cols;
-	int rows = img.rows;
+
 	GaussianBlur(img, img, Size(5, 5), 25);
 
-	for (int x = 1; x < cols - 1; x++)
+	for (int x = 1; x < img.cols - 1; x++)
 	{
-		for (int y = 1; y < rows - 1; y++)
+		for (int y = 1; y < img.rows - 1; y++)
 		{
 			Point curr_point(x, y);
 
@@ -2626,9 +2591,6 @@ cv::Mat newfil(Mat &img)
 	return mat_sub;
 
 }
-
-
-
 
 
 //void form_an_image(std::ostream & st) {
@@ -2683,12 +2645,6 @@ cv::Mat newfil(Mat &img)
 //}
 
 
-
-
-
-
-
-
 cv::Mat MatrixGrad(cv::Mat& img , int h)
 {
 	cv::Mat sub_mat(img.size(), CV_8UC1, Scalar(0));
@@ -2719,9 +2675,7 @@ cv::Mat MatrixGrad(cv::Mat& img , int h)
 
 cv::Mat kMeans(cv::Mat& src)
 {
-	
-	int cols = src.cols;
-	int rows = src.rows;
+
 
 	vector<uint8_t> colors;
 
@@ -2760,9 +2714,6 @@ cv::Mat kMeans(cv::Mat& src)
 	waitKey();
 
 }
-
-
-
 
 
 		//
@@ -2824,3 +2775,4 @@ cv::Mat calcHough(cv::Mat& img)
 	}
 	return sub_mat;
 }
+
