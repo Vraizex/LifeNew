@@ -16,9 +16,10 @@ float dist(Point a, Point b, Vec3b color1, Vec3b color2)
 
 Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 {
+		assert(!src.empty());
 		cv::Mat_<Vec3b> clone;
-		std::string file_path = "C:\\Users\\User\\Downloads\\im0_.png";
-		src = imread(file_path, 1);
+		//std::string file_path = "C:\\Users\\User\\Downloads\\im0_.png";
+		//Mat_<Vec3b> src = imread(file_path, 1);
 		clone = src.clone();
 		int no_of_points = src.rows * src.cols;
 		//// количество кластеров
@@ -81,11 +82,11 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 						label = centers[cluster_index].second;
 					}
 				}
-
 				if (label != labels[points_index])
+				{
 					labeling_changed = true;
-
-				labels[points_index] = label;
+					labels[points_index] = label;
+				}
 			}
 			// Recompute cluster centers
 			for (int cluster_index = 0; cluster_index < no_clusters; cluster_index++)
@@ -111,7 +112,6 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 					}
 				}
 			}
-
 			// Average values
 			for (int cluster_index = 0; cluster_index < no_clusters; cluster_index++)
 			{
@@ -119,10 +119,8 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 				centers[cluster_index].first.y /= cl_sizes[cluster_index].second != 0 ? cl_sizes[cluster_index].second : 1;
 			}
 			iter_counter++;
-
 		} 
 		while (labeling_changed && iter_counter < MAX_ITERS);
-
 		// Assemble the destination image
 		for (int points_index = 0; points_index < no_of_points; points_index++)
 		{
@@ -130,9 +128,11 @@ Mat_<Vec3b> k_means(Mat_<Vec3b> & src)
 		}
 		// Compute number of seconds spent on computing
 		cout << float(clock() - begin_time) / CLOCKS_PER_SEC;
+
+		return clone;
 		// Display clone
-		imshow("ClusterImage", clone);
-		waitKey(0);
+		//imshow("ClusterImage", clone);
+		//waitKey(0);
 }
 
 cv::Mat_<Vec3b> kMeans(Mat_<Vec3b>& src)

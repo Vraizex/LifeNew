@@ -63,6 +63,28 @@ protected:
 	//win_sobel4.show(new_sobel4);
 };
 
-cv::Mat Binarizathion(cv::Mat& img);
 //Methods release
 Mat_<Vec3b> k_means(Mat_<Vec3b> & src);
+
+cv::Mat NewSobol(cv::Mat& img);
+cv::Mat NewShar(cv::Mat& img);
+cv::Mat NewGradientPrevitta(cv::Mat& img);
+
+cv::Mat newfil(cv::Mat& img);
+cv::Mat MatrixGrad(cv::Mat& img, int h);
+cv::Mat calcHough(cv::Mat& img);
+cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter);
+
+
+cv::Mat calcLoGDiskretWeights(cv::Mat& img);
+
+
+cv::Mat cvInvHaarWavelet(Mat &src, Mat &dst, int NIter, int SHRINKAGE_TYPE = 0, float SHRINKAGE_T = 50); // Вейвлет-преобразование
+cv::Mat calcKircsha(cv::Mat& img, int k, int z);
+cv::Mat calcRobinsone(cv::Mat& img, int k);
+
+pair<cv::Mat, cv::Mat> calc3x3Gradient(cv::Mat& img);
+
+cv::Mat MarrHildeth(cv::Mat& img, float sigm);
+
+cv::Mat NewFilter(cv::Mat& img);

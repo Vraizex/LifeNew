@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Pix.h"
 
 using namespace std;
@@ -69,7 +68,7 @@ mat_start.at<uint8_t>(Point(x, y)) = 255;
 }
 }
 return mat_start;
-}
+}  
 
 cv::Mat eroze(cv::Mat const& img, Kernel const& kernel)
 {

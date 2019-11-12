@@ -1,53 +1,84 @@
 #pragma once
 #include "Pix.h"
 
-namespace sobel_image
+
+static int xGradient(Mat const& img, int x, int y) //Gradient dx
 {
-int xGradient(Mat & img, int x, int y) //Gradient dx
-{
-return img.at<uchar>(y - 1, x - 1) +
-2 * img.at<uchar>(y, x - 1) +
-img.at<uchar>(y + 1, x - 1) -
-img.at<uchar>(y - 1, x + 1) -
-2 * img.at<uchar>(y, x + 1) -
-img.at<uchar>(y + 1, x + 1);
+	return img.at<uchar>(y - 1, x - 1) +
+		2 * img.at<uchar>(y, x - 1) +
+		img.at<uchar>(y + 1, x - 1) -
+		img.at<uchar>(y - 1, x + 1) -
+		2 * img.at<uchar>(y, x + 1) -
+		img.at<uchar>(y + 1, x + 1);
 }
 
-int yGradient(Mat & img, int x, int y) //Gradient dy
+static int yGradient(Mat const& img, int x, int y) //Gradient dy
 {
-return img.at<uchar>(y - 1, x - 1) +
-2 * img.at<uchar>(y - 1, x) +
-img.at<uchar>(y - 1, x + 1) -
-img.at<uchar>(y + 1, x - 1) -
-2 * img.at<uchar>(y + 1, x) -
-img.at<uchar>(y + 1, x + 1);
+	return img.at<uchar>(y - 1, x - 1) +
+		2 * img.at<uchar>(y - 1, x) +
+		img.at<uchar>(y - 1, x + 1) -
+		img.at<uchar>(y + 1, x - 1) -
+		2 * img.at<uchar>(y + 1, x) -
+		img.at<uchar>(y + 1, x + 1);
 }
 
+
+namespace IP
+{
+	struct Thresholds
+	{
+		int threshold_min;
+		int threshold_max;
+	};
+
+	cv::Mat sobol(cv::Mat& img)
+	{
+		cv::Mat dst(img.size(), img.type(), Scalar(0));
+		int gx, gy, sum;
+
+		for (int y = 0; y < img.rows; y++)
+		{
+			for (int x = 0; x < img.cols; x++)
+			{
+				dst.at<uchar>(y, x) = 0.0;
+			}
+		}
+		for (int y = 1; y < img.rows - 1; y++)
+		{
+			for (int x = 1; x < img.cols - 1; x++)
+			{
+				gx = xGradient(img, x, y);
+				gy = yGradient(img, x, y);
+				sum = abs(gx) + abs(gy);
+				sum = sum > 255 ? 255 : sum;
+				sum = sum < 0 ? 0 : sum;
+				dst.at<uchar>(y, x) = sum;
+			}
+		}
+		return dst;
+	}
+
+	cv::Mat Threshold(cv::Mat const& img, Thresholds const& threshold)
+	{
+		cv::Mat mat_start(img.size(), img.type(), Scalar(0));
+
+		for (int x = 1; x < img.cols - 1; x++)
+		{
+			for (int y = 1; y < img.rows - 1; y++)
+			{
+				Point curr_point(x, y);
+				if (threshold.threshold_min < mat_start.at<uint8_t>(curr_point) && mat_start.at<uint8_t>(curr_point) < threshold.threshold_max)
+				{
+					mat_start.at<uint8_t>(curr_point) = threshold.threshold_max;
+				}
+				else
+				{
+					mat_start.at<uint8_t>(curr_point) = 0;
+				}
+			}
+		}
+		return mat_start;
+	}
 }
 
-cv::Mat calcPrevitta(cv::Mat& img);
-cv::Mat calcRobertsa(cv::Mat& img);
-
-cv::Mat NewSobol(cv::Mat& img);
-cv::Mat NewShar(cv::Mat& img);
-cv::Mat NewGradientPrevitta(cv::Mat& img);
-
-cv::Mat newfil(cv::Mat& img);
-cv::Mat MatrixGrad(cv::Mat& img, int h);
-cv::Mat calcHough(cv::Mat& img);
-cv::Mat cvHaarWavelet(cv::Mat &img, cv::Mat &dst, int NIter);
-
-cv::Mat lagrange(cv::Mat& img);
-cv::Mat Catmull_Rom(cv::Mat& img);
-cv::Mat B_Spline(cv::Mat& img);
-cv::Mat Splines(cv::Mat& img);
-
-cv::Mat calcLoGDiskret(cv::Mat& img);
-cv::Mat calcLoGDiskretWeights(cv::Mat& img);
-cv::Mat calcLoGDiskretWeightsProg(cv::Mat& img);
-
-
-cv::Mat cvInvHaarWavelet(Mat &src, Mat &dst, int NIter, int SHRINKAGE_TYPE = 0, float SHRINKAGE_T = 50); // Вейвлет-преобразование
-cv::Mat calcKircsha(cv::Mat& img, int k, int z);
-cv::Mat calcRobinsone(cv::Mat& img, int k);
 
