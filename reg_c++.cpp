@@ -55,7 +55,6 @@ public:
 	}
 
 private:
-
 	vector<double> m_x_vals;
 	vector<double> m_y_vals;
 	double m_num_elems;
@@ -73,8 +72,6 @@ int main(int argc, char** argv)
 	LinearReg lr(x, y);
 	lr.trainAlg(1000, 3, -10);
 	cout << lr.regress(3)<<endl;
-
-
 	system("pause");
 	return 0;
 }
